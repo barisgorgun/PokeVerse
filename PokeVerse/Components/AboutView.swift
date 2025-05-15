@@ -13,14 +13,14 @@ final class AboutView: UIView {
 
     enum Constants {
         static let stackSpacing: CGFloat = 16
+        static let negativeStackSpacing: CGFloat = -16
         static let customStackSpacing: CGFloat = 8
         static let sectionStackSpacing: CGFloat = 12
-        static let nameLabelSize: CGFloat = 32
-        static let descriptionLabelSize: CGFloat = 15
-        static let sectionHeaderSize: CGFloat = 20
+        static let labelSize: CGFloat = 20
+        static let alphaValue: CGFloat = 0.1
     }
 
-    private var pokemon: SpeciesDetailResponseModel?
+    private var pokemon: SpeciesDetail?
     private var pokemonDetails: PokemonDetails?
 
     private let stackView: UIStackView = {
@@ -49,10 +49,10 @@ final class AboutView: UIView {
 
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: topAnchor, constant: 16),
-            stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            stackView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: -16)
+            stackView.topAnchor.constraint(equalTo: topAnchor, constant: Constants.stackSpacing),
+            stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.stackSpacing),
+            stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: Constants.negativeStackSpacing),
+            stackView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: Constants.negativeStackSpacing)
         ])
     }
 
@@ -74,21 +74,24 @@ final class AboutView: UIView {
 
         let titleLabel = UILabel()
         titleLabel.text = "detail_section_details".localized()
-        titleLabel.font = UIFont.systemFont(ofSize: Constants.sectionHeaderSize, weight: .bold)
+        titleLabel.font = UIFont.systemFont(ofSize: Constants.labelSize, weight: .bold)
+
+        guard let pokemonDetails else {
+            return UIView()
+        }
 
         stack.addArrangedSubview(titleLabel)
-        stack.addArrangedSubview(createStatRow(title: "detail_header_capture_rate".localized(), value: "\(pokemon.captureRate ?? .zero)"))
-        stack.addArrangedSubview(createStatRow(title: "detail_header_base_happiness".localized(), value: "\(pokemon.baseHappiness ?? .zero)"))
-        stack.addArrangedSubview(createStatRow(title: "detail_header_weight".localized(), value: "\(pokemonDetails?.weight ?? .zero)"))
-        stack.addArrangedSubview(createStatRow(title: "detail_header_height".localized(), value: "\(pokemonDetails?.height ?? .zero)"))
-        stack.addArrangedSubview(createStatRow(title: "detail_header_type".localized(), value: "\(pokemonDetails?.types?.first?.type?.name ?? "")"))
+        stack.addArrangedSubview(createStatRow(title: "detail_header_capture_rate".localized(), value: "\(pokemon.captureRate.zeroIfNone())"))
+        stack.addArrangedSubview(createStatRow(title: "detail_header_base_happiness".localized(), value: "\(pokemon.baseHappiness.zeroIfNone())"))
+        stack.addArrangedSubview(createStatRow(title: "detail_header_weight".localized(), value: "\(pokemonDetails.weight.zeroIfNone())"))
+        stack.addArrangedSubview(createStatRow(title: "detail_header_height".localized(), value: "\(pokemonDetails.height.zeroIfNone())"))
+        stack.addArrangedSubview(createStatRow(title: "detail_header_type".localized(), value: "\((pokemonDetails.types?.first?.type?.name).emptyIfNone())"))
 
         return stack
     }
 
     private func createStatRow(title: String, value: String) -> UIStackView {
-        let stack = UIStackView()
-        stack.axis = .horizontal
+        let stack = UIStackView(axis: .horizontal)
         stack.distribution = .fill
 
         let titleLabel = UILabel()
@@ -113,14 +116,14 @@ final class AboutView: UIView {
 
         let titleLabel = UILabel()
         titleLabel.text = "detail_header_egg_groups".localized()
-        titleLabel.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        titleLabel.font = UIFont.systemFont(ofSize: Constants.labelSize, weight: .bold)
 
         let groupsStack = UIStackView(axis: .horizontal, spacing: Constants.customStackSpacing)
 
         pokemon.eggGroups.forEach { group in
             let pill = PillLabel()
             pill.text = group.name.capitalized
-            pill.backgroundColor = .systemBlue.withAlphaComponent(0.1)
+            pill.backgroundColor = .systemBlue.withAlphaComponent(Constants.alphaValue)
             pill.textColor = .systemBlue
             groupsStack.addArrangedSubview(pill)
         }

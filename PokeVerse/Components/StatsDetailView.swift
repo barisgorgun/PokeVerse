@@ -9,16 +9,30 @@ import UIKit
 
 final class StatsDetailView: UIView {
 
+    // MARK: - Constants
+
+    enum Constants {
+        static let stackSpacing: CGFloat = 16
+        static let negativeStackSpacing: CGFloat = -16
+        static let customStackSpacing: CGFloat = 12
+        static let labelSize: CGFloat = 20
+        static let progressViewWidth: CGFloat = 100
+        static let progressViewHeight: CGFloat = 8
+        static let cornerRadius: CGFloat = 4
+        static let valueLabelWidth: CGFloat = 30
+        static let progressViewSize: Float = 10
+    }
+
     // MARK: - UI Components
 
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "detail_section_stats".localized()
-        label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        label.font = UIFont.systemFont(ofSize: Constants.labelSize, weight: .bold)
         return label
     }()
 
-    private let statsStack = UIStackView(axis: .vertical, spacing: 12)
+    private let statsStack = UIStackView(axis: .vertical, spacing: Constants.customStackSpacing)
 
     // MARK: - Init
 
@@ -41,13 +55,13 @@ final class StatsDetailView: UIView {
         statsStack.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 16),
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: Constants.stackSpacing),
+            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.stackSpacing),
 
-            statsStack.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20),
-            statsStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            statsStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            statsStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
+            statsStack.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: Constants.labelSize),
+            statsStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.stackSpacing),
+            statsStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: Constants.negativeStackSpacing),
+            statsStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: Constants.negativeStackSpacing)
         ])
     }
 
@@ -64,35 +78,35 @@ final class StatsDetailView: UIView {
     }
 
     private func createStatRow(name: String, value: Int) -> UIView {
-        let row = UIStackView(axis: .horizontal, spacing: 12, alignment: .center)
+        let row = UIStackView(axis: .horizontal, spacing: Constants.customStackSpacing, alignment: .center)
         row.distribution = .fill
 
         let nameLabel = UILabel()
         nameLabel.text = name
         nameLabel.textColor = .secondaryLabel
         nameLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
-        nameLabel.numberOfLines = 0
+        nameLabel.numberOfLines = .zero
         nameLabel.adjustsFontSizeToFitWidth = true
 
         let progressView = UIProgressView(progressViewStyle: .default)
-        progressView.progress = Float(value) / 10
+        progressView.progress = Float(value) / Constants.progressViewSize
         progressView.tintColor = PokemonTypeColor.progressColor(for: value)
-        progressView.layer.cornerRadius = 4
+        progressView.layer.cornerRadius = Constants.cornerRadius
         progressView.clipsToBounds = true
 
         let valueLabel = UILabel()
         valueLabel.text = "\(value)"
         valueLabel.textAlignment = .right
         valueLabel.setContentHuggingPriority(.required, for: .horizontal)
-        valueLabel.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        valueLabel.widthAnchor.constraint(equalToConstant: Constants.valueLabelWidth).isActive = true
 
         row.addArrangedSubview(nameLabel)
         row.addArrangedSubview(progressView)
         row.addArrangedSubview(valueLabel)
 
         NSLayoutConstraint.activate([
-            progressView.heightAnchor.constraint(equalToConstant: 8),
-            progressView.widthAnchor.constraint(equalToConstant: 100)
+            progressView.heightAnchor.constraint(equalToConstant: Constants.progressViewHeight),
+            progressView.widthAnchor.constraint(equalToConstant: Constants.progressViewWidth)
         ])
 
         return row

@@ -116,22 +116,9 @@ final class PokemonDetailViewController: UIViewController, AlertPresentable {
         gradientLayer.frame = view.bounds
     }
 
-    // TODO: Bunun için çözüm bul
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithTransparentBackground()
-        appearance.backgroundColor = .clear
-        appearance.titleTextAttributes = [.foregroundColor: UIColor.black]
-
-        navigationController?.navigationBar.standardAppearance = appearance
-        navigationController?.navigationBar.scrollEdgeAppearance = appearance
-
-        navigationController?.navigationBar.isTranslucent = true
-        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.applyTransparentAppearance()
     }
 
     private func setupViews() {

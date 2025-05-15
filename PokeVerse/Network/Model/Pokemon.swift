@@ -6,12 +6,12 @@
 //
 
 struct Pokemon {
-    let speciesDetail: SpeciesDetailResponseModel
+    let speciesDetail: SpeciesDetail
     let evolutionDetails: EvolutionChainDetails
     let pokemonDetails: PokemonDetails
 
     init(
-        speciesDetail: SpeciesDetailResponseModel,
+        speciesDetail: SpeciesDetail,
         evolutionDetails: EvolutionChainDetails,
         pokemonDetails: PokemonDetails
     ) {

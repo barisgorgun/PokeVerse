@@ -18,5 +18,17 @@ extension UINavigationController {
         navigationBar.standardAppearance = appearance
         navigationBar.scrollEdgeAppearance = appearance
     }
-}
 
+    func applyTransparentAppearance(titleColor: UIColor = .black) {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = .clear
+        appearance.titleTextAttributes = [.foregroundColor: titleColor]
+
+        navigationBar.standardAppearance = appearance
+        navigationBar.scrollEdgeAppearance = appearance
+        navigationBar.isTranslucent = true
+        navigationBar.setBackgroundImage(UIImage(), for: .default)
+        navigationBar.shadowImage = UIImage()
+    }
+}

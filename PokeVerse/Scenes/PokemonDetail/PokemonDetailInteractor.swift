@@ -12,7 +12,7 @@ final class PokemonDetailInteractor: PokemonDetailInteractorProtocol {
     weak var delegate: PokemonDetailInteractorDelegate?
     private let pokomenDetailService: PokemonDetailServiceProtocol
     private let pokemonUrl: String
-    private var speciesDetail: SpeciesDetailResponseModel?
+    private var speciesDetail: SpeciesDetail?
     private var evolutionDetails: EvolutionChainDetails?
     private var pokemonDetails: PokemonDetails?
 
@@ -25,7 +25,6 @@ final class PokemonDetailInteractor: PokemonDetailInteractorProtocol {
         delegate?.handleOutput(.setLoading(true))
 
         let result = await pokomenDetailService.fetchSpeciesDetail(pokemonUrl: pokemonUrl)
-        print("Gorgun: \(pokemonUrl)")
 
         switch result {
         case .success(let response):

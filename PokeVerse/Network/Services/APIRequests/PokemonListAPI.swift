@@ -9,7 +9,7 @@ import Foundation
 
 struct PokemonListAPI: APIRequest {
     var path: String {
-        nextUrl ?? "/pokemon-species"
+        "/pokemon-species"
     }
 
     var method: HTTPMethod {
@@ -23,6 +23,9 @@ struct PokemonListAPI: APIRequest {
      }
 
     var fullURL: URL? {
-        URL(string: nextUrl ?? "")
+        if let nextUrl {
+            return URL(string: nextUrl)
+        }
+        return nil
     }
 }

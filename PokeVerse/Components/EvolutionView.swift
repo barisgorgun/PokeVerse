@@ -10,18 +10,31 @@ import Kingfisher
 
 final class EvolutionDetailView: UIView {
 
+    // MARK: - Constants
+
+    enum Constants {
+        static let stackSpacing: CGFloat = 16
+        static let negativeStackSpacing: CGFloat = -16
+        static let customStackSpacing: CGFloat = 8
+        static let arrowSize: CGFloat = 14
+        static let labelSize: CGFloat = 20
+        static let imageViewSize: CGFloat = 80
+        static let nameLabelSize: CGFloat = 16
+        static let labelNumberOfLines: Int = 2
+    }
+
     // MARK: - UI Components
 
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "detail_section_evolution_chain".localized()
-        label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        label.font = UIFont.systemFont(ofSize: Constants.labelSize, weight: .bold)
         return label
     }()
 
     private let evolutionStack = UIStackView(
         axis: .horizontal,
-        spacing: 14,
+        spacing: Constants.arrowSize,
         alignment: .center
     )
 
@@ -46,13 +59,13 @@ final class EvolutionDetailView: UIView {
         evolutionStack.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 16),
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: Constants.stackSpacing),
+            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.stackSpacing),
 
-            evolutionStack.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20),
-            evolutionStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            evolutionStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            evolutionStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
+            evolutionStack.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: Constants.labelSize),
+            evolutionStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.stackSpacing),
+            evolutionStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: Constants.negativeStackSpacing),
+            evolutionStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: Constants.negativeStackSpacing)
         ])
     }
 
@@ -91,22 +104,26 @@ final class EvolutionDetailView: UIView {
 
         let nameLabel = UILabel()
         nameLabel.text = pokemonName
-        nameLabel.numberOfLines = 0
+        nameLabel.numberOfLines = .zero
         nameLabel.textAlignment = .center
-        nameLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        nameLabel.font = UIFont.systemFont(ofSize: Constants.nameLabelSize, weight: .medium)
 
         let methodLabel = UILabel()
         methodLabel.text = method
-        methodLabel.font = UIFont.italicSystemFont(ofSize: 14)
+        methodLabel.font = UIFont.italicSystemFont(ofSize: Constants.arrowSize)
         methodLabel.textColor = .secondaryLabel
         methodLabel.textAlignment = .center
-        methodLabel.numberOfLines = 2
+        methodLabel.numberOfLines = Constants.labelNumberOfLines
 
         let stack = UIStackView(
             axis: .vertical,
-            spacing: 8,
+            spacing: Constants.customStackSpacing,
             alignment: .center,
-            arrangedSubviews: [imageView, nameLabel, methodLabel]
+            arrangedSubviews: [
+                imageView,
+                nameLabel,
+                methodLabel
+            ]
         )
 
 
@@ -114,8 +131,8 @@ final class EvolutionDetailView: UIView {
         stack.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            imageView.widthAnchor.constraint(equalToConstant: 80),
-            imageView.heightAnchor.constraint(equalToConstant: 80),
+            imageView.widthAnchor.constraint(equalToConstant: Constants.imageViewSize),
+            imageView.heightAnchor.constraint(equalToConstant: Constants.imageViewSize),
 
             stack.topAnchor.constraint(equalTo: container.topAnchor),
             stack.leadingAnchor.constraint(equalTo: container.leadingAnchor),
@@ -133,8 +150,8 @@ final class EvolutionDetailView: UIView {
         evolutionStack.addArrangedSubview(arrow)
 
         NSLayoutConstraint.activate([
-            arrow.widthAnchor.constraint(equalToConstant: 14),
-            arrow.heightAnchor.constraint(equalToConstant: 14)
+            arrow.widthAnchor.constraint(equalToConstant: Constants.arrowSize),
+            arrow.heightAnchor.constraint(equalToConstant: Constants.arrowSize)
         ])
     }
 
@@ -149,7 +166,11 @@ final class EvolutionDetailView: UIView {
         return Int(idString)
     }
 
-    private func parseEvolutionChain(_ chain: ChainLink) -> [(name: String, url: String, method: String)] {
+    private func parseEvolutionChain(_ chain: ChainLink) -> [(
+        name: String,
+        url: String,
+        method: String
+    )] {
         var result = [(String, String, String)]()
         var currentLink: ChainLink? = chain
 

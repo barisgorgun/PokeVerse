@@ -43,7 +43,6 @@ protocol PokeListPresenterProtocol: AnyObject {
 enum PokeListPresenterOutput {
     case setLoading(Bool)
     case showPokeList([Species])
-    case showLoadMore
     case showAlert(Alert)
 }
 

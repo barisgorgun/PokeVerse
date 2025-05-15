@@ -30,7 +30,6 @@ final class PokeListInteractor: PokeListInteractorProtocol {
             DispatchQueue.main.async {
                 self.delegate?.handleOutput(.showPokeList(pokeList))
             }
-            //await fetchImages(for: pokeList)
         case .failure(let error):
             delegate?.handleOutput(.showAlert(error))
         }
@@ -55,7 +54,6 @@ final class PokeListInteractor: PokeListInteractorProtocol {
             DispatchQueue.main.async {
                 self.delegate?.handleOutput(.showPokeList(pokeList))
             }
-            //await fetchImages(for: pokeList)
         case .failure(let failure):
             delegate?.handleOutput(.showAlert(failure))
         }

@@ -10,9 +10,9 @@ import UIKit
 
 
 protocol PokemonListServiceProtocol {
-    func fetchPokemonList() async -> Result<PokeSpeciesResponseModel, NetworkError>
+    func fetchPokemonList() async -> Result<PokeSpecies, NetworkError>
     func fetchImages(from url: URL) async -> Result<UIImage, NetworkError>
-    func fetchMoreData(from url: String) async -> Result<PokeSpeciesResponseModel, NetworkError>
+    func fetchMoreData(from url: String) async -> Result<PokeSpecies, NetworkError>
 }
 
 final class PokemonListService: PokemonListServiceProtocol {
@@ -22,14 +22,14 @@ final class PokemonListService: PokemonListServiceProtocol {
         self.networkManager = networkManager
     }
 
-    func fetchPokemonList() async -> Result<PokeSpeciesResponseModel, NetworkError> {
+    func fetchPokemonList() async -> Result<PokeSpecies, NetworkError> {
         let service = PokemonListAPI()
-        return await networkManager.request(service: service, type: PokeSpeciesResponseModel.self)
+        return await networkManager.request(service: service, type: PokeSpecies.self)
     }
 
-    func fetchMoreData(from url: String) async -> Result<PokeSpeciesResponseModel, NetworkError> {
+    func fetchMoreData(from url: String) async -> Result<PokeSpecies, NetworkError> {
         let service = PokemonListAPI(nextUrl: url)
-        return await networkManager.request(service: service, type: PokeSpeciesResponseModel.self)
+        return await networkManager.request(service: service, type: PokeSpecies.self)
     }
 
     func fetchImages(from url: URL) async -> Result<UIImage, NetworkError> {

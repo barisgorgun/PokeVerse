@@ -5,7 +5,7 @@
 //  Created by Gorgun, Baris on 11.05.2025.
 //
 
-struct SpeciesDetailResponseModel: Codable {
+struct SpeciesDetail: Codable {
     let id: Int
     let name: String
     let color: PokemonColor

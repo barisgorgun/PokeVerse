@@ -43,6 +43,10 @@ final class PokeListPresenter: PokeListPresenterProtocol {
     }
 
     func didSelectPoke(at index: Int) {
+        guard pokeList.indices.contains(index) else {
+            return
+        }
+
         let poke = pokeList[index].url
         router.navigate(to: .detail(poke))
     }
@@ -59,7 +63,6 @@ extension PokeListPresenter: PokeListInteractorDelegate {
         case .showPokeList(let pokelist):
             self.pokeList.append(contentsOf: pokelist)
             view?.handleOutput(.showPokeList(pokelist))
-            view?.handleOutput(.showLoadMore)
         case .showAlert(let error):
             let alert = Alert(messsage: error.localizedDescription)
             view?.handleOutput(.showAlert(alert))

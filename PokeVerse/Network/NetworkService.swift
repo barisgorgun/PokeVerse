@@ -20,6 +20,10 @@ extension APIRequest {
     }
 }
 
+extension APIRequest {
+    var fullURL: URL? { nil }
+}
+
 public extension APIRequest {
     var urlRequest: URLRequest {
         let url: URL

@@ -22,7 +22,6 @@ final class PokeListViewController: UIViewController, AlertPresentable {
 
     private let pokeListPresenter: PokeListPresenterProtocol!
     private var pokeList: [Species] = []
-    private var imageMap: [String: UIImage] = [:]
     private let tableView = UITableView()
 
     // MARK: - Life Cycle
@@ -43,18 +42,11 @@ final class PokeListViewController: UIViewController, AlertPresentable {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    // TODO: Bunun için çözüm bul
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = .white
-        appearance.titleTextAttributes = [.foregroundColor: UIColor.black]
-
-        navigationController?.navigationBar.standardAppearance = appearance
-        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationController?.applyDefaultAppearance()
     }
 }
 
@@ -132,15 +124,16 @@ extension PokeListViewController: PokeListViewProtocol {
         switch output {
         case .showPokeList(let pokeList):
             self.pokeList.append(contentsOf: pokeList)
-            self.tableView.reloadData()
+            tableView.reloadData()
+            if tableView.tableFooterView == nil {
+                tableView.tableFooterView = makeLoadMoreFooterView()
+            }
         case .setLoading(let isLoading):
             DispatchQueue.main.async {
                 self.navigationController?.view.setLoading(isLoading)
             }
         case .showAlert(let alert):
             show(alert: alert, style: .alert)
-        case .showLoadMore:
-            tableView.tableFooterView = makeLoadMoreFooterView()
         }
     }
 }

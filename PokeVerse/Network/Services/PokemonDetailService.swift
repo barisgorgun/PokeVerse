@@ -9,7 +9,7 @@ import Foundation
 
 
 protocol PokemonDetailServiceProtocol {
-    func fetchSpeciesDetail(pokemonUrl: String) async -> Result<SpeciesDetailResponseModel, NetworkError>
+    func fetchSpeciesDetail(pokemonUrl: String) async -> Result<SpeciesDetail, NetworkError>
     func fetchEvouations(evolutionUrl: String) async -> Result<EvolutionChainDetails, NetworkError>
     func fetchPokemonDetails(id: String) async -> Result<PokemonDetails, NetworkError>
 }
@@ -23,9 +23,9 @@ final class PokemonDetailService: PokemonDetailServiceProtocol {
         self.networkManager = networkManager
     }
 
-    func fetchSpeciesDetail(pokemonUrl: String) async -> Result<SpeciesDetailResponseModel, NetworkError> {
+    func fetchSpeciesDetail(pokemonUrl: String) async -> Result<SpeciesDetail, NetworkError> {
         let service = SpeciesDetailAPI(pokemonUrl: pokemonUrl)
-        return await networkManager.request(service: service, type: SpeciesDetailResponseModel.self)
+        return await networkManager.request(service: service, type: SpeciesDetail.self)
     }
 
     func fetchEvouations(evolutionUrl: String) async -> Result<EvolutionChainDetails, NetworkError> {

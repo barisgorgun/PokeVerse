@@ -7,9 +7,9 @@
 
 import Foundation
 
-// MARK: - PokeSpeciesResponseModel
+// MARK: - PokeSpecies
 
-struct PokeSpeciesResponseModel: Codable {
+struct PokeSpecies: Codable {
     let next: String?
     let results: [Species]
 }
