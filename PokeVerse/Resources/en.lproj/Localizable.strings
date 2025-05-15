@@ -1,0 +1,38 @@
+/* 
+  Localizable.strings
+  PokeVerse
+
+  Created by Gorgun, Baris on 8.05.2025.
+  
+*/
+
+// MARK: - Alert & Actions -
+
+"error_1" = "Error";
+"error_2" = "Warning";
+"action_1" = "OK";
+"action_2" = "Load more";
+
+// MARK: - Title -
+
+"pokeList_title" = "Poke List";
+
+// MARK: - Main Section Titles
+
+"detail_section_details" = "Details";
+"detail_section_evolution_chain" = "Evolution Chain";
+
+// MARK: - Section Titles
+
+"detail_section_about" = "About";
+"detail_section_stats" = "Stats";
+"detail_section_evolution" = "Evolution";
+
+// MARK: - Detail Headers
+
+"detail_header_capture_rate" = "Capture Rate";
+"detail_header_base_happiness" = "Base Happiness";
+"detail_header_weight" = "Weight";
+"detail_header_height" = "Height";
+"detail_header_type" = "Type";
+"detail_header_egg_groups" = "Egg Groups";
