@@ -73,13 +73,13 @@ final class PokeListPresenterTests: XCTestCase {
     }
 
     func test_handleOutput_setLoading_updatesView() {
-        // When - Loading started
+        // When
         presenter.handleOutput(.setLoading(true))
 
         // Then
         XCTAssertEqual(view.outputs, [.setLoading(true)])
 
-        // When - Loading finished
+        // When
         presenter.handleOutput(.setLoading(false))
 
         // Then

@@ -28,7 +28,6 @@ final class PokeListInteractorTests: XCTestCase {
     @MainActor
     func test_loadInitialData_success() async throws {
         // Given
-        mockNetworkManager.shouldSucceed = true
         let expectedList = try mockNetworkManager.loadExpectedList(from: "species").results
 
         // When
@@ -71,13 +70,12 @@ final class PokeListInteractorTests: XCTestCase {
     @MainActor
     func test_fetchMoreData_success() async throws {
         // Given
-        mockNetworkManager.shouldSucceed = true
         let firstPageList = try mockNetworkManager.loadExpectedList(from: "species").results
 
-        // When - Initial Load
+        // When
         await interactor.fetchData()
 
-        // Then - Initial Load
+        // Then
         XCTAssertEqual(
             presenter.outputs,
             [
@@ -87,15 +85,15 @@ final class PokeListInteractorTests: XCTestCase {
             ]
         )
 
-        // Given - Pagination
+        // Given
         resetTestEnvironment(with: "speciesMore")
         let secondPageList = try mockNetworkManager.loadExpectedList(from: "speciesMore").results
 
-        // When - Load More
+        // When
         await interactor.fetchMoreData()
 
 
-        // Then - Pagination
+        // Then
         XCTAssertEqual(
             presenter.outputs,
             [
@@ -109,13 +107,12 @@ final class PokeListInteractorTests: XCTestCase {
     @MainActor
     func test_fetchMoreData_failure() async throws {
         // Given
-        mockNetworkManager.shouldSucceed = true
         let firstPageList = try mockNetworkManager.loadExpectedList(from: "species").results
 
-        // When - Initial Load
+        // When
         await interactor.fetchData()
 
-        // Then - Initial Load
+        // Then
         XCTAssertEqual(
             presenter.outputs,
             [
@@ -125,15 +122,15 @@ final class PokeListInteractorTests: XCTestCase {
             ]
         )
 
-        // Given - Pagination
+        // Given
         mockNetworkManager.shouldSucceed = false
         resetTestEnvironment(with: "speciesMore")
 
-        // When - Load More
+        // When
         await interactor.fetchMoreData()
 
 
-        // Then - Pagination
+        // Then
         guard case .showAlert(let error) = presenter.outputs.last else {
             return XCTFail("Expected .showAlert as last output")
         }
@@ -148,9 +145,6 @@ final class PokeListInteractorTests: XCTestCase {
     }
 
     func test_fetchMoreData_whenNextURLIsNil_doesNotFetchData() async {
-        // Given
-        mockNetworkManager.shouldSucceed = true
-
         // When
         await interactor.fetchMoreData()
 
