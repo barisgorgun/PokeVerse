@@ -29,7 +29,7 @@ final class PokemonDetailInteractor: PokemonDetailInteractorProtocol {
         switch result {
         case .success(let response):
             speciesDetail = response
-            await fetchEvouations(response.evolutionChain?.url ?? "", id: "\(response.id)")
+            await fetchEvouations((response.evolutionChain?.url).emptyIfNone(), id: "\(response.id)")
         case .failure(let error):
             delegate?.handleOutput(.showAlert(error))
         }

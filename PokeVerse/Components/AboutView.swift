@@ -23,13 +23,7 @@ final class AboutView: UIView {
     private var pokemon: SpeciesDetail?
     private var pokemonDetails: PokemonDetails?
 
-    private let stackView: UIStackView = {
-        let sv = UIStackView()
-        sv.axis = .vertical
-        sv.spacing = Constants.stackSpacing
-        sv.translatesAutoresizingMaskIntoConstraints = false
-        return sv
-    }()
+    private let stackView = UIStackView(axis: .vertical, spacing: Constants.stackSpacing)
 
     // MARK: - Init
 
@@ -44,6 +38,7 @@ final class AboutView: UIView {
 
     private func commonInit() {
         addSubview(stackView)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
         setupConstraints()
     }
 

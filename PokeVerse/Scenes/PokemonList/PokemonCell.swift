@@ -11,12 +11,11 @@ final class PokemonCell: UITableViewCell {
     static let identifier = "PokemonCell"
 
     enum Constants {
-        static let imageSize: CGFloat = 80
         static let imageLeading: CGFloat = 16
         static let trailingSpacing: CGFloat = -16
-        static let imageViewSize: CGFloat = 60
-        static let leadingSpacing: CGFloat = 16
-        static let labelFontSize: CGFloat = 18
+        static let imageViewSize: CGFloat = 90
+        static let leadingSpacing: CGFloat = 30
+        static let labelFontSize: CGFloat = 24
     }
 
     private var pokeImageView: UIImageView = {
@@ -53,7 +52,7 @@ final class PokemonCell: UITableViewCell {
         ])
 
         pokeImageView.contentMode = .scaleAspectFit
-        nameLabel.font = UIFont.systemFont(ofSize: Constants.labelFontSize, weight: .medium)
+        nameLabel.font = UIFont.systemFont(ofSize: Constants.labelFontSize, weight: .bold)
     }
 
     required init?(coder: NSCoder) {
@@ -63,7 +62,8 @@ final class PokemonCell: UITableViewCell {
     func configure(species: Species) {
         nameLabel.text = species.name
         pokeImageView.contentMode = .scaleAspectFit
-        pokeImageView.kf.setImage(with: species.imageURL)
+        let pokemonId = species.pokemonID
+        pokeImageView.setPokemonImage(id: pokemonId.zeroIfNone())
     }
 }
 

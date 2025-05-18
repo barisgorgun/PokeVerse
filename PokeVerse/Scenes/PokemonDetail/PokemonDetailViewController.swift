@@ -26,9 +26,22 @@ final class PokemonDetailViewController: UIViewController, AlertPresentable {
 
     // MARK: - Properties
 
-    private var pokemon: Pokemon? = nil
-    private let scrollView = UIScrollView()
-    private let contentView = UIView()
+    private var pokemon: Pokemon?
+
+    // MARK: - UI Components
+
+    private let scrollView: UIScrollView  = {
+        let scroll = UIScrollView()
+        scroll.translatesAutoresizingMaskIntoConstraints = false
+        return scroll
+    }()
+
+    private let contentView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
     private var activeConstraints: [NSLayoutConstraint] = []
     private var mainStack = UIStackView(axis: .vertical, spacing: Constants.stackSpacing)
 
@@ -37,8 +50,6 @@ final class PokemonDetailViewController: UIViewController, AlertPresentable {
         gradient.locations = [0, 0.7]
         return gradient
     }()
-
-    // MARK: - UI Components
 
     private let headerImageView: UIImageView = {
         let iv = UIImageView()
@@ -60,10 +71,7 @@ final class PokemonDetailViewController: UIViewController, AlertPresentable {
         return label
     }()
 
-    private let typeLabel: PillLabel = {
-        let label = PillLabel()
-        return label
-    }()
+    private let typeLabel = PillLabel()
 
     private lazy var segmentedControl: UISegmentedControl = {
         let sc = UISegmentedControl(
@@ -102,15 +110,6 @@ final class PokemonDetailViewController: UIViewController, AlertPresentable {
         view.layer.insertSublayer(gradientLayer, at: .zero)
     }
 
-    init(pokeDetailPresenter: PokemonDetailPresenter) {
-        self.pokeDetailPresenter = pokeDetailPresenter
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         gradientLayer.frame = view.bounds
@@ -121,10 +120,22 @@ final class PokemonDetailViewController: UIViewController, AlertPresentable {
         navigationController?.applyTransparentAppearance()
     }
 
-    private func setupViews() {
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.translatesAutoresizingMaskIntoConstraints = false
+    init(pokeDetailPresenter: PokemonDetailPresenter) {
+        self.pokeDetailPresenter = pokeDetailPresenter
+        super.init(nibName: nil, bundle: nil)
+    }
 
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+}
+
+// MARK: Private funcs
+
+private extension PokemonDetailViewController {
+
+    func setupViews() {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
 
@@ -147,8 +158,7 @@ final class PokemonDetailViewController: UIViewController, AlertPresentable {
         contentView.addSubview(mainStack)
     }
 
-
-    private func setupConstraints() {
+    func setupConstraints() {
         NSLayoutConstraint.deactivate(activeConstraints)
 
         activeConstraints = [
@@ -179,8 +189,7 @@ final class PokemonDetailViewController: UIViewController, AlertPresentable {
         NSLayoutConstraint.activate(activeConstraints)
     }
 
-
-    private func updateUI() {
+    func updateUI() {
         guard let pokemon else {
             return
         }
@@ -190,14 +199,9 @@ final class PokemonDetailViewController: UIViewController, AlertPresentable {
         typeLabel.backgroundColor = PokemonTypeColor.color(for: pokemon.speciesDetail.color.name).withAlphaComponent(0.2)
         typeLabel.textColor = PokemonTypeColor.color(for: pokemon.speciesDetail.color.name)
         descriptionLabel.text = pokemon.speciesDetail.getLatestFlavorText()
-        headerImageView.kf.setImage(with: pokemon.evolutionDetails.chain.species.imageURL)
+        headerImageView.setPokemonImage(id: pokemon.speciesDetail.id)
         gradientLayer.colors = [PokemonTypeColor.color(for: pokemon.speciesDetail.color.name).cgColor, UIColor.systemBackground.cgColor]
     }
-}
-
-// MARK: Private funcs
-
-private extension PokemonDetailViewController {
 
     func createSeparator() -> UIView {
         let view = UIView()
@@ -221,22 +225,10 @@ private extension PokemonDetailViewController {
         evolutionView.isHidden = true
     }
 
-    func showAboutView() {
-        aboutView.isHidden = false
-        statsView.isHidden = true
-        evolutionView.isHidden = true
-    }
-
-    func showEvolutionView() {
-        aboutView.isHidden = true
-        statsView.isHidden = true
-        evolutionView.isHidden = false
-    }
-
-    func showStatsView() {
-        aboutView.isHidden = true
-        statsView.isHidden = false
-        evolutionView.isHidden = true
+    func showView(_ viewToShow: DetailViewType) {
+        aboutView.isHidden = viewToShow != .about
+        statsView.isHidden = viewToShow != .stats
+        evolutionView.isHidden = viewToShow != .evolution
     }
 
     @objc func segmentChanged(_ sender: UISegmentedControl) {
@@ -263,14 +255,7 @@ extension PokemonDetailViewController: PokemonDetailViewProtocol {
                 self.setupInfoViews(pokemon: pokemon)
             }
         case .showInfoView(let detailViewType):
-            switch detailViewType {
-            case .about:
-                showAboutView()
-            case .evolution:
-                showEvolutionView()
-            case .stats:
-                showStatsView()
-            }
+            showView(detailViewType)
         }
     }
 }

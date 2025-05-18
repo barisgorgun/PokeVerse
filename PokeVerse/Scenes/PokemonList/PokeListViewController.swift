@@ -13,7 +13,7 @@ final class PokeListViewController: UIViewController, AlertPresentable {
     // MARK: - Constants
 
     enum Constants {
-        static let cellHeight: CGFloat = 80
+        static let cellHeight: CGFloat = 100
         static let footerHeight: CGFloat = 70
         static let footherViewHeight: CGFloat = 60
     }

@@ -97,10 +97,7 @@ final class EvolutionDetailView: UIView {
 
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.kf.setImage(
-            with: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/\(pokemonId).png"),
-            placeholder: UIImage(named: "pokemon_placeholder")
-        )
+        imageView.setPokemonImage(id: pokemonId)
 
         let nameLabel = UILabel()
         nameLabel.text = pokemonName

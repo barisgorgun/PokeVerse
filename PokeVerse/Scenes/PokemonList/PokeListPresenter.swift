@@ -9,12 +9,12 @@ import Foundation
 
 final class PokeListPresenter: PokeListPresenterProtocol {
 
-    // MARK: - Private properties
+    // MARK: - Properties
 
     weak var view: PokeListViewProtocol?
     private let interactor: PokeListInteractorProtocol
     private let router: PokeListRouterProtocol
-    private var pokeList: [Species] = []
+    private(set) var pokeList: [Species] = []
 
     init(
         view: PokeListViewProtocol?,
@@ -64,7 +64,7 @@ extension PokeListPresenter: PokeListInteractorDelegate {
             self.pokeList.append(contentsOf: pokelist)
             view?.handleOutput(.showPokeList(pokelist))
         case .showAlert(let error):
-            let alert = Alert(messsage: error.localizedDescription)
+            let alert = Alert(message: error.localizedDescription)
             view?.handleOutput(.showAlert(alert))
         }
     }

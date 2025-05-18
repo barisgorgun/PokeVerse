@@ -7,57 +7,44 @@
 
 import UIKit
 
-struct Alert {
+struct Alert: Equatable {
     let title: String?
-    let messsage: String?
+    let message: String?
     let tintColor: UIColor?
-    let actions: [UIAlertAction]
+    let actions: [AlertAction]
 
     init(
         title: String? = "error_2".localized(),
-        messsage: String?,
+        message: String?,
         tintColor: UIColor? = .none,
-        actions: [UIAlertAction]? = nil
+        actions: [AlertAction]? = nil
     ) {
         self.title = title
-        self.messsage = messsage
+        self.message = message
         self.tintColor = tintColor
 
         if let actions, !actions.isEmpty {
             self.actions = actions
         } else {
-            let defaultAction = UIAlertAction(
-                title: "action_1".localized(),
-                style: .default,
-                handler: nil
-            )
-            self.actions = [defaultAction]
+            self.actions = [
+                AlertAction(title: "action_1".localized())
+            ]
         }
     }
 }
 
-protocol AlertPresentable where Self: UIViewController {
-    func show(alert: Alert, style: UIAlertController.Style)
-}
+struct AlertAction: Equatable {
+    let title: String
+    let style: Style
 
+    enum Style: Equatable {
+        case `default`
+        case cancel
+        case destructive
+    }
 
-extension AlertPresentable {
-
-    func show(alert: Alert, style: UIAlertController.Style = .alert) {
-        DispatchQueue.main.async {
-            let alertController = UIAlertController(
-                title: alert.title,
-                message: alert.messsage,
-                preferredStyle: style
-            )
-
-            if let tintColor = alert.tintColor {
-                alertController.view.tintColor = tintColor
-            }
-
-            alert.actions.forEach { alertController.addAction($0) }
-
-            self.present(alertController, animated: true)
-        }
+    init(title: String, style: Style = .default) {
+        self.title = title
+        self.style = style
     }
 }

@@ -26,13 +26,13 @@ final class MockNetworkManager: NetworkManagerProtocol {
         self.mockFileName = mockFileName
     }
 
-    func request<T>(service: any PokeVerse.NetworkServiceProtocol, type: T.Type) async -> Result<T, NetworkError> where T : Decodable {
+    func request<T>(service: any APIRequest, type: T.Type) async -> Result<T, NetworkError> where T : Decodable {
         do {
             guard shouldSucceed else {
                 return .failure(.serverError(statusCode: Constants.statusCode))
             }
 
-            let data: T = try loadItemsFromJSON()
+            let data: T = try loadItemsFromJSON(from: mockFileName)
             return .success(data)
 
         } catch let error as NetworkError {
@@ -52,13 +52,17 @@ final class MockNetworkManager: NetworkManagerProtocol {
         return .success(image!)
     }
 
-    private func loadItemsFromJSON<T: Decodable>() throws -> T {
-        guard let path = Bundle(for: type(of: self)).path(forResource: mockFileName, ofType: "json") else {
+    private func loadItemsFromJSON<T: Decodable>(from fileName: String) throws -> T {
+        guard let path = Bundle(for: type(of: self)).path(forResource: fileName, ofType: "json") else {
             throw NetworkError.fileNotFound
         }
 
         let data = try Data(contentsOf: URL(fileURLWithPath: path))
         let decoder = JSONDecoder()
         return try decoder.decode(T.self, from: data)
+    }
+
+    func loadExpectedList(from fileName: String) throws -> PokeSpecies {
+        return try loadItemsFromJSON(from: fileName)
     }
 }

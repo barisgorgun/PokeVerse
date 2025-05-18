@@ -22,7 +22,7 @@ protocol PokeListInteractorProtocol: AnyObject {
     func fetchMoreData() async
 }
 
-enum PokeListInteractorOutput {
+enum PokeListInteractorOutput: Equatable {
     case setLoading(Bool)
     case showPokeList([Species])
     case showAlert(NetworkError)
@@ -40,7 +40,7 @@ protocol PokeListPresenterProtocol: AnyObject {
     func didSelectPoke(at index: Int)
 }
 
-enum PokeListPresenterOutput {
+enum PokeListPresenterOutput: Equatable {
     case setLoading(Bool)
     case showPokeList([Species])
     case showAlert(Alert)

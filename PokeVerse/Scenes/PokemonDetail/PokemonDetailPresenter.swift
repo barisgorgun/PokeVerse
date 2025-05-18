@@ -16,6 +16,8 @@ enum DetailViewType: Int {
 
 final class PokemonDetailPresenter: PokemonDetailPresenterProtocol {
 
+    // MARK: - Properties
+
     weak var view: PokemonDetailViewProtocol?
     private let interactor: PokemonDetailInteractorProtocol
 
@@ -57,7 +59,7 @@ extension PokemonDetailPresenter: PokemonDetailInteractorDelegate {
         case .setLoading(let isLoading):
             view?.handleOutput(.setLoading(isLoading))
         case .showAlert(let error):
-            let alert = Alert(messsage: error.localizedDescription)
+            let alert = Alert(message: error.localizedDescription)
             view?.handleOutput(.showAlert(alert))
         case .showData(let data):
             view?.handleOutput(.showData(data))

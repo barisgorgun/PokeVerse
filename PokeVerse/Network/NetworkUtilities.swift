@@ -13,7 +13,11 @@ public enum HTTPMethod: String {
     case put = "PUT"
 }
 
-enum NetworkError: LocalizedError {
+enum NetworkError: LocalizedError, Equatable {
+    static func == (lhs: NetworkError, rhs: NetworkError) -> Bool {
+        lhs.localizedDescription == rhs.localizedDescription
+    }
+    
     case unknownStatusCode
     case contentEmptyData
     case contentDecoding(error: Error)

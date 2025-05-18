@@ -1,14 +1,13 @@
 //
-//  PokeVerseTests.swift
+//  PokemonDetailInteractorTests.swift
 //  PokeVerseTests
 //
-//  Created by Gorgun, Baris on 2.05.2025.
+//  Created by Gorgun, Baris on 18.05.2025.
 //
 
 import XCTest
-@testable import PokeVerse
 
-final class PokeVerseTests: XCTestCase {
+final class PokemonDetailInteractorTests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.

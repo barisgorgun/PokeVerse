@@ -36,7 +36,9 @@ final class PokeListInteractor: PokeListInteractorProtocol {
     }
 
     func fetchMoreData() async {
-        guard let nextURL = nextURL else { return }
+        guard let nextURL = nextURL else {
+            return
+        }
         await fetchData(from: nextURL)
     }
 
@@ -63,7 +65,7 @@ final class PokeListInteractor: PokeListInteractorProtocol {
         await withTaskGroup(of: (String, UIImage?).self) { group in
             for species in speciesList {
 
-                guard let url = species.imageURL else {
+                /*  guard let url = species.imageURL else {
                     continue
                 }
 
@@ -78,15 +80,15 @@ final class PokeListInteractor: PokeListInteractorProtocol {
                 }
             }
 
-            /*for await (name, image) in group {
+          for await (name, image) in group {
                 if let image {
                     ImageCacheManager.shared.setImage(image, for: name)
 
                     DispatchQueue.main.async {
                         self.delegate?.handleOutput(.showImage(name: name, image: image))
                     }
-                }
-            }*/
+                }*/
+            }
         }
     }
 }
