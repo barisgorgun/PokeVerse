@@ -20,11 +20,7 @@ final class MockNetworkManager: NetworkManagerProtocol {
     // MARK: - Properties
 
     var shouldSucceed: Bool = true
-    var mockFileName: String
-
-    init(mockFileName: String) {
-        self.mockFileName = mockFileName
-    }
+    var mockFileName: String = ""
 
     func request<T>(service: any APIRequest, type: T.Type) async -> Result<T, NetworkError> where T : Decodable {
         do {
@@ -62,7 +58,8 @@ final class MockNetworkManager: NetworkManagerProtocol {
         return try decoder.decode(T.self, from: data)
     }
 
-    func loadExpectedList(from fileName: String) throws -> PokeSpecies {
+    func loadExpectedData<T: Decodable>(from fileName: String) throws -> T {
+        mockFileName = fileName
         return try loadItemsFromJSON(from: fileName)
     }
 }

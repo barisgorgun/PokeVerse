@@ -28,7 +28,8 @@ final class PokeListInteractorTests: XCTestCase {
     @MainActor
     func test_loadInitialData_success() async throws {
         // Given
-        let expectedList = try mockNetworkManager.loadExpectedList(from: "species").results
+        let expectedResponse: PokeSpecies = try mockNetworkManager.loadExpectedData(from: "species")
+        let expectedList = expectedResponse.results
 
         // When
         await interactor.fetchData()
@@ -70,7 +71,8 @@ final class PokeListInteractorTests: XCTestCase {
     @MainActor
     func test_fetchMoreData_success() async throws {
         // Given
-        let firstPageList = try mockNetworkManager.loadExpectedList(from: "species").results
+        let expectedResponse: PokeSpecies = try mockNetworkManager.loadExpectedData(from: "species")
+        let firstPageList = expectedResponse.results
 
         // When
         await interactor.fetchData()
@@ -87,7 +89,8 @@ final class PokeListInteractorTests: XCTestCase {
 
         // Given
         resetTestEnvironment(with: "speciesMore")
-        let secondPageList = try mockNetworkManager.loadExpectedList(from: "speciesMore").results
+        let secondExpectedResponse: PokeSpecies = try mockNetworkManager.loadExpectedData(from: "speciesMore")
+        let secondPageList = secondExpectedResponse.results
 
         // When
         await interactor.fetchMoreData()
@@ -107,7 +110,8 @@ final class PokeListInteractorTests: XCTestCase {
     @MainActor
     func test_fetchMoreData_failure() async throws {
         // Given
-        let firstPageList = try mockNetworkManager.loadExpectedList(from: "species").results
+        let expectedResponse: PokeSpecies = try mockNetworkManager.loadExpectedData(from: "species")
+        let firstPageList = expectedResponse.results
 
         // When
         await interactor.fetchData()
@@ -156,7 +160,7 @@ final class PokeListInteractorTests: XCTestCase {
 
     private func setupTestEnvironment(with mockFile: String) {
         presenter = MockPokeListePresenter()
-        mockNetworkManager = MockNetworkManager(mockFileName: mockFile)
+        mockNetworkManager = MockNetworkManager()
         let service = PokemonListService(networkManager: mockNetworkManager)
         interactor = PokeListInteractor(pokeService: service)
         interactor.delegate = presenter
