@@ -16,16 +16,26 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
 
-        let viewController = PokeListBuilder.build()
-        let navigationController = UINavigationController()
-        navigationController.applyDefaultAppearance()
+        window = UIWindow(windowScene: windowScene)
 
-        let window = UIWindow(windowScene: windowScene)
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
-        self.window = window
+        let splashVC = SplashViewController()
 
-        navigationController.pushViewController(viewController, animated: true)
+        splashVC.onAnimationFinished = { [weak self] in
+            guard let self  else {
+                return
+            }
+
+            let viewController = PokeListBuilder.build()
+            let navigationController = UINavigationController(rootViewController: viewController)
+            navigationController.applyDefaultAppearance()
+
+            DispatchQueue.main.async {
+                self.window?.rootViewController = navigationController
+            }
+        }
+
+        window?.rootViewController = splashVC
+        window?.makeKeyAndVisible()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

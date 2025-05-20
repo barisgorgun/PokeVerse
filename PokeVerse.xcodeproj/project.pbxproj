@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A83E33982DD12704009D3340 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = A83E33972DD12704009D3340 /* Kingfisher */; };
+		A88DD4612DDC97AC00CE5033 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = A88DD4602DDC97AC00CE5033 /* Lottie */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +71,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A83E33982DD12704009D3340 /* Kingfisher in Frameworks */,
+				A88DD4612DDC97AC00CE5033 /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -131,6 +133,7 @@
 			name = PokeVerse;
 			packageProductDependencies = (
 				A83E33972DD12704009D3340 /* Kingfisher */,
+				A88DD4602DDC97AC00CE5033 /* Lottie */,
 			);
 			productName = PokeVerse;
 			productReference = A829F9932DC4E5D90078FD4B /* PokeVerse.app */;
@@ -217,6 +220,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				A83E32C62DD12664009D3340 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				A88DD45F2DDC97AC00CE5033 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A829F9942DC4E5D90078FD4B /* Products */;
@@ -583,6 +587,14 @@
 				minimumVersion = 8.3.2;
 			};
 		};
+		A88DD45F2DDC97AC00CE5033 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.5.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -590,6 +602,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A83E32C62DD12664009D3340 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		A88DD4602DDC97AC00CE5033 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A88DD45F2DDC97AC00CE5033 /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
