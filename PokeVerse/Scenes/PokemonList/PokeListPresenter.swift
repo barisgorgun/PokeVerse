@@ -15,6 +15,8 @@ final class PokeListPresenter: PokeListPresenterProtocol {
     private let interactor: PokeListInteractorProtocol
     private let router: PokeListRouterProtocol
     private(set) var pokeList: [Species] = []
+    private var isLoadingMore = false
+    private var hasMorePages = true
 
     init(
         view: PokeListViewProtocol?,
@@ -24,21 +26,23 @@ final class PokeListPresenter: PokeListPresenterProtocol {
         self.view = view
         self.interactor = interactor
         self.router = router
-
-        self.interactor.delegate = self
     }
 
-    // MARK: - Protocol funcs
-    
     func load() {
         Task {
-            await interactor.fetchData()
-        }
-    }
+            await view?.showLoading(isLoading: true)
+            let result = await interactor.fetchData()
 
-    func loadMoreData() {
-        Task {
-            await interactor.fetchMoreData()
+            await view?.showLoading(isLoading: false)
+
+            switch result {
+            case .success(let pokeList):
+                self.pokeList = pokeList
+                await view?.showPokeList(species: pokeList)
+            case .failure(let failure):
+                let alert = Alert(message: failure.localizedDescription)
+                await view?.showAlert(alert: alert)
+            }
         }
     }
 
@@ -50,22 +54,34 @@ final class PokeListPresenter: PokeListPresenterProtocol {
         let poke = pokeList[index].url
         router.navigate(to: .detail(poke))
     }
-}
 
-// MARK: - PokeListInteractorDelegate
+    func prefetchIfNeeded(for indexPaths: [IndexPath]) {
+        guard !isLoadingMore, hasMorePages else { return }
+        let threshold = pokeList.count - 5
 
-extension PokeListPresenter: PokeListInteractorDelegate {
+        if indexPaths.contains(where: { $0.row >= threshold }) {
+            isLoadingMore = true
+            loadMoreData()
+        }
+    }
 
-    func handleOutput(_ output: PokeListInteractorOutput) {
-        switch output {
-        case .setLoading(let isLoading):
-            view?.handleOutput(.setLoading(isLoading))
-        case .showPokeList(let pokelist):
-            self.pokeList.append(contentsOf: pokelist)
-            view?.handleOutput(.showPokeList(pokelist))
-        case .showAlert(let error):
-            let alert = Alert(message: error.localizedDescription)
-            view?.handleOutput(.showAlert(alert))
+    private func loadMoreData() {
+        Task {
+            await view?.showLoading(isLoading: true)
+            let result = await interactor.fetchMoreData()
+
+            await view?.showLoading(isLoading: false)
+            isLoadingMore = false
+            hasMorePages = true
+
+            switch result {
+            case .success(let pokeList):
+                self.pokeList.append(contentsOf: pokeList)
+                await view?.showPokeList(species: self.pokeList)
+            case .failure(let failure):
+                let alert = Alert(message: failure.localizedDescription)
+                await view?.showAlert(alert: alert)
+            }
         }
     }
 }

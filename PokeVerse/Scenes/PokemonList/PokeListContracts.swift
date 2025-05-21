@@ -9,41 +9,26 @@ import UIKit
 
 // MARK: - View
 
+@MainActor
 protocol PokeListViewProtocol: AnyObject {
-    func handleOutput(_ output: PokeListPresenterOutput)
+    func showPokeList(species: [Species])
+    func showAlert(alert: Alert)
+    func showLoading(isLoading: Bool)
 }
 
 // MARK: - Interactor
 
 protocol PokeListInteractorProtocol: AnyObject {
-    var delegate: PokeListInteractorDelegate? { get set }
-
-    func fetchData() async
-    func fetchMoreData() async
-}
-
-enum PokeListInteractorOutput: Equatable {
-    case setLoading(Bool)
-    case showPokeList([Species])
-    case showAlert(NetworkError)
-}
-
-protocol PokeListInteractorDelegate: AnyObject {
-    func handleOutput(_ output: PokeListInteractorOutput)
+    func fetchData() async -> Result<[Species], Error>
+    func fetchMoreData() async -> Result<[Species], Error>
 }
 
 // MARK: - Presenter
 
 protocol PokeListPresenterProtocol: AnyObject {
     func load()
-    func loadMoreData()
     func didSelectPoke(at index: Int)
-}
-
-enum PokeListPresenterOutput: Equatable {
-    case setLoading(Bool)
-    case showPokeList([Species])
-    case showAlert(Alert)
+    func prefetchIfNeeded(for indexPaths: [IndexPath])
 }
 
 // MARK: - Router

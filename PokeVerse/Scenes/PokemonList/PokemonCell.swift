@@ -10,7 +10,7 @@ import UIKit
 final class PokemonCell: UITableViewCell {
     static let identifier = "PokemonCell"
 
-    enum Constants {
+    private enum Constants {
         static let imageLeading: CGFloat = 16
         static let trailingSpacing: CGFloat = -16
         static let imageViewSize: CGFloat = 90
@@ -18,14 +18,14 @@ final class PokemonCell: UITableViewCell {
         static let labelFontSize: CGFloat = 24
     }
 
-    private var pokeImageView: UIImageView = {
+    private lazy var pokeImageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFit
         iv.translatesAutoresizingMaskIntoConstraints = false
         return iv
     }()
 
-    private let nameLabel: UILabel = {
+    private lazy var nameLabel: UILabel = {
         let lbl = UILabel()
         lbl.translatesAutoresizingMaskIntoConstraints = false
         return lbl
@@ -61,7 +61,6 @@ final class PokemonCell: UITableViewCell {
 
     func configure(species: Species) {
         nameLabel.text = species.name
-        pokeImageView.contentMode = .scaleAspectFit
         let pokemonId = species.pokemonID
         pokeImageView.setPokemonImage(id: pokemonId.zeroIfNone())
     }

@@ -21,17 +21,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let splashVC = SplashViewController()
 
         splashVC.onAnimationFinished = { [weak self] in
-            guard let self  else {
+            guard let self else {
                 return
             }
 
             let viewController = PokeListBuilder.build()
             let navigationController = UINavigationController(rootViewController: viewController)
             navigationController.applyDefaultAppearance()
-
-            DispatchQueue.main.async {
-                self.window?.rootViewController = navigationController
-            }
+            self.window?.rootViewController = navigationController
         }
 
         window?.rootViewController = splashVC

@@ -11,7 +11,7 @@ final class PokemonDetailViewController: UIViewController, AlertPresentable {
 
     // MARK: - Constants
 
-    enum Constants {
+    private enum Constants {
         static let stackSpacing: CGFloat = 16
         static let negativeStackSpacing: CGFloat = -16
         static let bottomAnchorSpacing: CGFloat = -20
@@ -42,8 +42,41 @@ final class PokemonDetailViewController: UIViewController, AlertPresentable {
         return view
     }()
 
-    private var activeConstraints: [NSLayoutConstraint] = []
-    private var mainStack = UIStackView(axis: .vertical, spacing: Constants.stackSpacing)
+    private lazy var idLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.monospacedDigitSystemFont(ofSize: Constants.stackSpacing, weight: .bold)
+        label.textColor = .secondaryLabel
+        return label
+    }()
+
+    private lazy var nameLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: Constants.nameLabelSize, weight: .heavy)
+        return label
+    }()
+
+    private lazy var  headerStack = UIStackView(
+        axis: .horizontal,
+        spacing: Constants.customStackSpacing,
+        alignment: .center,
+        arrangedSubviews: [idLabel, nameLabel]
+    )
+
+    private lazy var mainStack:  UIStackView = {
+        let stack = UIStackView(
+            axis: .vertical,
+            spacing: Constants.stackSpacing,
+            arrangedSubviews: [
+                headerStack,
+                typeLabel,
+                segmentedControl,
+                createSeparator(),
+                descriptionLabel
+            ]
+        )
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        return stack
+    }()
 
     private lazy var gradientLayer: CAGradientLayer = {
         let gradient = CAGradientLayer()
@@ -56,19 +89,6 @@ final class PokemonDetailViewController: UIViewController, AlertPresentable {
         iv.contentMode = .scaleAspectFit
         iv.translatesAutoresizingMaskIntoConstraints = false
         return iv
-    }()
-
-    private let idLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.monospacedDigitSystemFont(ofSize: Constants.stackSpacing, weight: .bold)
-        label.textColor = .secondaryLabel
-        return label
-    }()
-
-    private let nameLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: Constants.nameLabelSize, weight: .heavy)
-        return label
     }()
 
     private let typeLabel = PillLabel()
@@ -140,28 +160,11 @@ private extension PokemonDetailViewController {
         scrollView.addSubview(contentView)
 
         contentView.addSubview(headerImageView)
-
-        let headerStack = UIStackView(
-            axis: .horizontal,
-            spacing: Constants.customStackSpacing,
-            alignment: .center,
-            arrangedSubviews: [idLabel, nameLabel]
-        )
-
-        mainStack.addArrangedSubview(headerStack)
-        mainStack.addArrangedSubview(typeLabel)
-        mainStack.addArrangedSubview(segmentedControl)
-        mainStack.addArrangedSubview(createSeparator())
-        mainStack.addArrangedSubview(descriptionLabel)
-        mainStack.translatesAutoresizingMaskIntoConstraints = false
-
         contentView.addSubview(mainStack)
     }
 
     func setupConstraints() {
-        NSLayoutConstraint.deactivate(activeConstraints)
-
-        activeConstraints = [
+        let activeConstraints = [
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),

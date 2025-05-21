@@ -9,7 +9,6 @@ import UIKit
 
 final class PokeListInteractor: PokeListInteractorProtocol {
 
-    weak var delegate: PokeListInteractorDelegate?
     private let pokeService: PokemonListServiceProtocol
     private var nextURL: String?
 
@@ -17,47 +16,32 @@ final class PokeListInteractor: PokeListInteractorProtocol {
         self.pokeService = pokeService
     }
 
-    func fetchData() async  {
-        delegate?.handleOutput(.setLoading(true))
+    func fetchData() async -> Result<[Species], Error> {
         let result = await pokeService.fetchPokemonList()
 
-        delegate?.handleOutput(.setLoading(false))
-
         switch result {
         case .success(let response):
-           let pokeList = response.results
             nextURL = response.next
-            DispatchQueue.main.async {
-                self.delegate?.handleOutput(.showPokeList(pokeList))
-            }
+            return .success(response.results)
+
         case .failure(let error):
-            delegate?.handleOutput(.showAlert(error))
+            return .failure(error)
         }
     }
 
-    func fetchMoreData() async {
-        guard let nextURL = nextURL else {
-            return
+    func fetchMoreData() async -> Result<[Species], Error> {
+        guard let nextURL else {
+            return .failure(NetworkError.contentEmptyData)
         }
-        await fetchData(from: nextURL)
-    }
 
-    private func fetchData(from url: String) async {
-        delegate?.handleOutput(.setLoading(true))
-        
-        let result = await pokeService.fetchMoreData(from: url)
+        let result = await pokeService.fetchMoreData(from: nextURL)
 
-        delegate?.handleOutput(.setLoading(false))
-        
         switch result {
         case .success(let response):
-            let pokeList = response.results
-            nextURL = response.next
-            DispatchQueue.main.async {
-                self.delegate?.handleOutput(.showPokeList(pokeList))
-            }
-        case .failure(let failure):
-            delegate?.handleOutput(.showAlert(failure))
+            self.nextURL = response.next
+            return .success(response.results)
+        case .failure(let error):
+            return .failure(error)
         }
     }
 

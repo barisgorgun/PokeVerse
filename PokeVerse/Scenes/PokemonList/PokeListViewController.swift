@@ -12,7 +12,7 @@ final class PokeListViewController: UIViewController, AlertPresentable {
 
     // MARK: - Constants
 
-    enum Constants {
+    private enum Constants {
         static let cellHeight: CGFloat = 100
         static let footerHeight: CGFloat = 70
         static let footherViewHeight: CGFloat = 60
@@ -58,6 +58,7 @@ private extension PokeListViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.prefetchDataSource = self
         tableView.register(PokemonCell.self, forCellReuseIdentifier: PokemonCell.identifier)
         view.addSubview(tableView)
 
@@ -67,21 +68,6 @@ private extension PokeListViewController {
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
-    }
-
-    func makeLoadMoreFooterView() -> UIView {
-        let footerView = LoadMoreFooterView()
-        footerView.frame = CGRect(
-            x: .zero,
-            y: .zero,
-            width: tableView.bounds.width,
-            height: Constants.footherViewHeight
-        )
-
-        footerView.onTap = { [weak self] in
-            self?.pokeListPresenter.loadMoreData()
-        }
-        return footerView
     }
 }
 
@@ -116,24 +102,29 @@ extension PokeListViewController: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
+// MARK: - UITableViewDataSourcePrefetching
+
+extension PokeListViewController: UITableViewDataSourcePrefetching {
+
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        pokeListPresenter.prefetchIfNeeded(for: indexPaths)
+    }
+}
+
 // MARK: - PokeListViewProtocol
 
 extension PokeListViewController: PokeListViewProtocol {
-
-    func handleOutput(_ output: PokeListPresenterOutput) {
-        switch output {
-        case .showPokeList(let pokeList):
-            self.pokeList.append(contentsOf: pokeList)
-            tableView.reloadData()
-            if tableView.tableFooterView == nil {
-                tableView.tableFooterView = makeLoadMoreFooterView()
-            }
-        case .setLoading(let isLoading):
-            DispatchQueue.main.async {
-                self.navigationController?.view.setLoading(isLoading)
-            }
-        case .showAlert(let alert):
-            show(alert: alert, style: .alert)
-        }
+    
+    func showPokeList(species: [Species]) {
+        self.pokeList = species
+        tableView.reloadData()
+    }
+    
+    func showAlert(alert: Alert) {
+        show(alert: alert, style: .alert)
+    }
+    
+    func showLoading(isLoading: Bool) {
+        self.navigationController?.view.setLoading(isLoading)
     }
 }
