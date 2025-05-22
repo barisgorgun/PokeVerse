@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Kingfisher
 
 final class EvolutionDetailView: UIView {
 
@@ -77,14 +76,13 @@ final class EvolutionDetailView: UIView {
 
         let stages = parseEvolutionChain(evolution)
         stages.forEach { stage in
-            if let pokemonId = extractPokemonId(from: stage.url) {
                 let stageView = createEvolutionStageView(
-                    pokemonId: pokemonId,
-                    pokemonName: stage.name.capitalized,
+                    pokemonName: stage.name,
+                    formattedName: stage.name.capitalized,
                     method: stage.method.capitalized
                 )
+
                 evolutionStack.addArrangedSubview(stageView)
-            }
             guard stage == stages.last! else {
                 addArrowView()
                 return
@@ -92,12 +90,12 @@ final class EvolutionDetailView: UIView {
         }
     }
 
-    private func createEvolutionStageView(pokemonId: Int, pokemonName: String, method: String) -> UIView {
+    private func createEvolutionStageView(pokemonName: String, formattedName: String, method: String) -> UIView {
         let container = UIView()
 
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.setPokemonImage(id: pokemonId)
+        imageView.image = ImageCacheManager.shared.getImage(for: pokemonName)
 
         let nameLabel = UILabel()
         nameLabel.text = pokemonName

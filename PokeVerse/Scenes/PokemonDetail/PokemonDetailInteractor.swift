@@ -8,63 +8,46 @@
 import Foundation
 
 final class PokemonDetailInteractor: PokemonDetailInteractorProtocol {
-
-    weak var delegate: PokemonDetailInteractorDelegate?
-    private let pokomenDetailService: PokemonDetailServiceProtocol
+    private let pokemonDetailService: PokemonDetailServiceProtocol
     private let pokemonUrl: String
     private var speciesDetail: SpeciesDetail?
     private var evolutionDetails: EvolutionChainDetails?
     private var pokemonDetails: PokemonDetails?
 
-    init(pokomenDetailService: PokemonDetailServiceProtocol, pokemonUrl: String) {
-        self.pokomenDetailService = pokomenDetailService
+    init(pokemonDetailService: PokemonDetailServiceProtocol, pokemonUrl: String) {
+        self.pokemonDetailService = pokemonDetailService
         self.pokemonUrl = pokemonUrl
     }
 
-    func fetchData() async {
-        delegate?.handleOutput(.setLoading(true))
+    func fetchData() async -> Result<Pokemon, NetworkError> {
+        let speciesResult = await pokemonDetailService.fetchSpeciesDetail(pokemonUrl: pokemonUrl)
 
-        let result = await pokomenDetailService.fetchSpeciesDetail(pokemonUrl: pokemonUrl)
-
-        switch result {
-        case .success(let response):
-            speciesDetail = response
-            await fetchEvouations((response.evolutionChain?.url).emptyIfNone(), id: "\(response.id)")
-        case .failure(let error):
-            delegate?.handleOutput(.showAlert(error))
+        guard case .success(let speciesDetail) = speciesResult else {
+            return .failure(NetworkError.contentEmptyData)
         }
-    }
 
-    private func fetchEvouations(_ evouationUrl: String, id: String) async {
-        let result = await pokomenDetailService.fetchEvouations(evolutionUrl: evouationUrl)
-
-        switch result {
-        case .success(let response):
-            evolutionDetails = response
-            await fetchSpeciesDetail(id: id)
-        case .failure(let error):
-            delegate?.handleOutput(.showAlert(error))
+        guard let evolutionUrl = speciesDetail.evolutionChain?.url else {
+            return .failure(NetworkError.invalidURL)
         }
-    }
 
-    private func fetchSpeciesDetail(id: String) async {
-        let result = await pokomenDetailService.fetchPokemonDetails(id: id)
-        delegate?.handleOutput(.setLoading(false))
-        switch result {
-        case .success(let response):
-            pokemonDetails = response
-            guard let speciesDetail, let evolutionDetails, let pokemonDetails else {
-                return
-            }
+        let evolutionResult = await pokemonDetailService.fetchEvouations(evolutionUrl: evolutionUrl)
 
-            let pokemon = Pokemon(
-                speciesDetail: speciesDetail,
-                evolutionDetails: evolutionDetails,
-                pokemonDetails: pokemonDetails
-            )
-            delegate?.handleOutput(.showData(pokemon))
-        case .failure(let error):
-            delegate?.handleOutput(.showAlert(error))
+        guard case .success(let evolutionDetails) = evolutionResult else {
+            return .failure(NetworkError.contentEmptyData)
         }
+
+        let detailsResult = await pokemonDetailService.fetchPokemonDetails(id: "\(speciesDetail.id)")
+
+        guard case .success(let pokemonDetails) = detailsResult else {
+            return .failure(NetworkError.contentEmptyData)
+        }
+
+        let pokemon = Pokemon(
+            speciesDetail: speciesDetail,
+            evolutionDetails: evolutionDetails,
+            pokemonDetails: pokemonDetails
+        )
+
+        return .success(pokemon)
     }
 }

@@ -29,19 +29,40 @@ enum NetworkError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .unknownStatusCode:
-             "Sunucudan beklenmeyen bir yanıt alındı."
+            "error_unknownStatusCode_description".localized()
         case .contentEmptyData:
-             "Sunucudan geçerli bir veri alınamadı."
+            "error_contentEmptyData_description".localized()
         case .contentDecoding:
-             "Veri çözümlenirken bir hata oluştu."
+            "error_contentDecoding_description".localized()
         case .invalidURL:
-             "Geçersiz istek URL’si."
+            "error_invalidURL_description".localized()
         case .serverError(let code):
-             "Sunucu hatası oluştu. Hata kodu: \(code)"
+            "error_serverError_description".localized()
         case .custom(let message):
              message
         case .fileNotFound:
-            "Dosya bulunamadı."
+            "error_fileNotFound_description".localized()
+        }
+    }
+}
+
+extension NetworkError {
+    var userMessage: String {
+        switch self {
+        case .unknownStatusCode:
+            "error_unknownStatusCode_message".localized()
+        case .contentEmptyData:
+            "error_contentEmptyData_message".localized()
+        case .contentDecoding:
+            "error_contentDecoding_message".localized()
+        case .invalidURL:
+            "error_invalidURL_message".localized()
+        case .serverError(let code):
+            "error_serverError_message".localized()
+        case .custom(let message):
+            message
+        case .fileNotFound:
+            "error_fileNotFound_message".localized()
         }
     }
 }

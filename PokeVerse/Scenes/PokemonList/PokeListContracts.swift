@@ -11,7 +11,7 @@ import UIKit
 
 @MainActor
 protocol PokeListViewProtocol: AnyObject {
-    func showPokeList(species: [Species])
+    func showPokeList(species: [PokemonDisplayItem])
     func showAlert(alert: Alert)
     func showLoading(isLoading: Bool)
 }
@@ -19,8 +19,8 @@ protocol PokeListViewProtocol: AnyObject {
 // MARK: - Interactor
 
 protocol PokeListInteractorProtocol: AnyObject {
-    func fetchData() async -> Result<[Species], Error>
-    func fetchMoreData() async -> Result<[Species], Error>
+    func fetchData() async -> Result<[PokemonDisplayItem], NetworkError>
+    func fetchMoreData() async -> Result<[PokemonDisplayItem], NetworkError>
 }
 
 // MARK: - Presenter

@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 enum DetailViewType: Int {
     case about = 0
     case stats
@@ -24,14 +23,22 @@ final class PokemonDetailPresenter: PokemonDetailPresenterProtocol {
     init(view: PokemonDetailViewProtocol?, interactor: PokemonDetailInteractorProtocol) {
         self.view = view
         self.interactor = interactor
-
-        self.interactor.delegate = self
     }
-
 
     func loadData() {
         Task {
-            await interactor.fetchData()
+            await view?.showLoading(isLoading: true)
+            let result = await interactor.fetchData()
+
+            await view?.showLoading(isLoading: false)
+
+            switch result {
+            case .success(let pokemon):
+                await view?.showData(pokemon: pokemon)
+            case .failure(let error):
+                let alert = Alert(message: error.userMessage)
+                await view?.showAlert(alert: alert)
+            }
         }
     }
 
@@ -39,30 +46,15 @@ final class PokemonDetailPresenter: PokemonDetailPresenterProtocol {
         guard let viewType = DetailViewType(rawValue: index) else {
             return
         }
-
-        switch viewType {
-        case .about:
-            view?.handleOutput(.showInfoView(.about))
-        case .stats:
-            view?.handleOutput(.showInfoView(.stats))
-        case .evolution:
-            view?.handleOutput(.showInfoView(.evolution))
-        }
-    }
-}
-
-// MARK: - PokemonDetailInteractorDelegate
-
-extension PokemonDetailPresenter: PokemonDetailInteractorDelegate {
-    func handleOutput(_ output: PokemonDetailInteractorOutput) {
-        switch output {
-        case .setLoading(let isLoading):
-            view?.handleOutput(.setLoading(isLoading))
-        case .showAlert(let error):
-            let alert = Alert(message: error.localizedDescription)
-            view?.handleOutput(.showAlert(alert))
-        case .showData(let data):
-            view?.handleOutput(.showData(data))
+        Task { @MainActor in
+            switch viewType {
+            case .about:
+                view?.showInfoView(view: .about)
+            case .stats:
+                view?.showInfoView(view: .stats)
+            case .evolution:
+                view?.showInfoView(view: .evolution)
+            }
         }
     }
 }

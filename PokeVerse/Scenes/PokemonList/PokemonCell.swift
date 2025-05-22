@@ -59,10 +59,9 @@ final class PokemonCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(species: Species) {
+    func configure(species: PokemonDisplayItem) {
         nameLabel.text = species.name
-        let pokemonId = species.pokemonID
-        pokeImageView.setPokemonImage(id: pokemonId.zeroIfNone())
+        pokeImageView.image = species.image
     }
 }
 

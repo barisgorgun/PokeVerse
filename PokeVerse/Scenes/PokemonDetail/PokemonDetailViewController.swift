@@ -62,7 +62,7 @@ final class PokemonDetailViewController: UIViewController, AlertPresentable {
         arrangedSubviews: [idLabel, nameLabel]
     )
 
-    private lazy var mainStack:  UIStackView = {
+    private lazy var mainStack: UIStackView = {
         let stack = UIStackView(
             axis: .vertical,
             spacing: Constants.stackSpacing,
@@ -70,12 +70,23 @@ final class PokemonDetailViewController: UIViewController, AlertPresentable {
                 headerStack,
                 typeLabel,
                 segmentedControl,
-                createSeparator(),
+                separatorView,
                 descriptionLabel
             ]
         )
         stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
+    }()
+
+    private lazy var separatorView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .separator
+        NSLayoutConstraint.activate([
+            view.heightAnchor.constraint(equalToConstant: 1)
+        ])
+        return view
+
     }()
 
     private lazy var gradientLayer: CAGradientLayer = {
@@ -202,18 +213,8 @@ private extension PokemonDetailViewController {
         typeLabel.backgroundColor = PokemonTypeColor.color(for: pokemon.speciesDetail.color.name).withAlphaComponent(0.2)
         typeLabel.textColor = PokemonTypeColor.color(for: pokemon.speciesDetail.color.name)
         descriptionLabel.text = pokemon.speciesDetail.getLatestFlavorText()
-        headerImageView.setPokemonImage(id: pokemon.speciesDetail.id)
+        headerImageView.image = ImageCacheManager.shared.getImage(for: pokemon.speciesDetail.name)
         gradientLayer.colors = [PokemonTypeColor.color(for: pokemon.speciesDetail.color.name).cgColor, UIColor.systemBackground.cgColor]
-    }
-
-    func createSeparator() -> UIView {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .separator
-        NSLayoutConstraint.activate([
-            view.heightAnchor.constraint(equalToConstant: 1)
-        ])
-        return view
     }
 
     func setupInfoViews(pokemon: Pokemon) {
@@ -243,22 +244,21 @@ private extension PokemonDetailViewController {
 
 extension PokemonDetailViewController: PokemonDetailViewProtocol {
 
-    func handleOutput(_ output: PokemonDetailPresenterOutput) {
-        switch output {
-        case .setLoading(let isLoading):
-            DispatchQueue.main.async {
-                self.navigationController?.view.setLoading(isLoading)
-            }
-        case .showAlert(let alert):
-            show(alert: alert)
-        case .showData(let pokemon):
-            self.pokemon = pokemon
-            DispatchQueue.main.async {
-                self.updateUI()
-                self.setupInfoViews(pokemon: pokemon)
-            }
-        case .showInfoView(let detailViewType):
-            showView(detailViewType)
-        }
+    func showData(pokemon: Pokemon) {
+        self.pokemon = pokemon
+        updateUI()
+        setupInfoViews(pokemon: pokemon)
+    }
+
+    func showAlert(alert: Alert) {
+        show(alert: alert)
+    }
+
+    func showLoading(isLoading: Bool) {
+        navigationController?.view.setLoading(isLoading)
+    }
+
+    func showInfoView(view: DetailViewType) {
+        showView(view)
     }
 }

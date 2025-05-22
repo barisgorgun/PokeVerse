@@ -13,7 +13,7 @@ struct PokemonDetailBuilder {
 
     static func build(with pokemon: String) -> UIViewController {
         let detailService = PokemonDetailService()
-        let interactor = PokemonDetailInteractor(pokomenDetailService: detailService, pokemonUrl: pokemon)
+        let interactor = PokemonDetailInteractor(pokemonDetailService: detailService, pokemonUrl: pokemon)
         let presenter = PokemonDetailPresenter(view: nil, interactor: interactor)
         let view = PokemonDetailViewController(pokeDetailPresenter: presenter)
         presenter.view = view

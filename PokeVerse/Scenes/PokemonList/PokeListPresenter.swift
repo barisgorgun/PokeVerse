@@ -14,7 +14,7 @@ final class PokeListPresenter: PokeListPresenterProtocol {
     weak var view: PokeListViewProtocol?
     private let interactor: PokeListInteractorProtocol
     private let router: PokeListRouterProtocol
-    private(set) var pokeList: [Species] = []
+    private(set) var pokeList: [PokemonDisplayItem] = []
     private var isLoadingMore = false
     private var hasMorePages = true
 
@@ -39,8 +39,8 @@ final class PokeListPresenter: PokeListPresenterProtocol {
             case .success(let pokeList):
                 self.pokeList = pokeList
                 await view?.showPokeList(species: pokeList)
-            case .failure(let failure):
-                let alert = Alert(message: failure.localizedDescription)
+            case .failure(let error):
+                let alert = Alert(message: error.userMessage)
                 await view?.showAlert(alert: alert)
             }
         }
@@ -56,7 +56,9 @@ final class PokeListPresenter: PokeListPresenterProtocol {
     }
 
     func prefetchIfNeeded(for indexPaths: [IndexPath]) {
-        guard !isLoadingMore, hasMorePages else { return }
+        guard !isLoadingMore, hasMorePages else {
+            return
+        }
         let threshold = pokeList.count - 5
 
         if indexPaths.contains(where: { $0.row >= threshold }) {
@@ -78,8 +80,8 @@ final class PokeListPresenter: PokeListPresenterProtocol {
             case .success(let pokeList):
                 self.pokeList.append(contentsOf: pokeList)
                 await view?.showPokeList(species: self.pokeList)
-            case .failure(let failure):
-                let alert = Alert(message: failure.localizedDescription)
+            case .failure(let error):
+                let alert = Alert(message: error.userMessage)
                 await view?.showAlert(alert: alert)
             }
         }

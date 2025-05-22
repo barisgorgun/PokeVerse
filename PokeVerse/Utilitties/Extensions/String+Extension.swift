@@ -10,6 +10,6 @@ import UIKit
 extension String {
 
     func localized() -> String {
-        NSLocalizedString(self, comment: "")
+        String(localized: LocalizationValue(self))
     }
 }

@@ -21,7 +21,7 @@ final class PokeListViewController: UIViewController, AlertPresentable {
     // MARK: - Properties
 
     private let pokeListPresenter: PokeListPresenterProtocol!
-    private var pokeList: [Species] = []
+    private var pokeList: [PokemonDisplayItem] = []
     private let tableView = UITableView()
 
     // MARK: - Life Cycle
@@ -47,10 +47,13 @@ final class PokeListViewController: UIViewController, AlertPresentable {
         super.viewWillAppear(animated)
 
         navigationController?.applyDefaultAppearance()
+        if let selectedIndexPath = tableView.indexPathForSelectedRow {
+            tableView.deselectRow(at: selectedIndexPath, animated: true)
+        }
     }
 }
 
-// MARK: Private Funcs
+// MARK: - Private Funcs
 
 private extension PokeListViewController {
 
@@ -115,7 +118,7 @@ extension PokeListViewController: UITableViewDataSourcePrefetching {
 
 extension PokeListViewController: PokeListViewProtocol {
     
-    func showPokeList(species: [Species]) {
+    func showPokeList(species: [PokemonDisplayItem]) {
         self.pokeList = species
         tableView.reloadData()
     }

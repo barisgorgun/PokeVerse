@@ -16,20 +16,20 @@ final class PokeListInteractor: PokeListInteractorProtocol {
         self.pokeService = pokeService
     }
 
-    func fetchData() async -> Result<[Species], Error> {
+    func fetchData() async -> Result<[PokemonDisplayItem], NetworkError> {
         let result = await pokeService.fetchPokemonList()
 
         switch result {
         case .success(let response):
             nextURL = response.next
-            return .success(response.results)
-
+            let displayItems = await createDisplayItems(from: response.results)
+            return .success(displayItems)
         case .failure(let error):
             return .failure(error)
         }
     }
 
-    func fetchMoreData() async -> Result<[Species], Error> {
+    func fetchMoreData() async -> Result<[PokemonDisplayItem], NetworkError> {
         guard let nextURL else {
             return .failure(NetworkError.contentEmptyData)
         }
@@ -39,40 +39,38 @@ final class PokeListInteractor: PokeListInteractorProtocol {
         switch result {
         case .success(let response):
             self.nextURL = response.next
-            return .success(response.results)
+            let displayItems = await createDisplayItems(from: response.results)
+            return .success(displayItems)
         case .failure(let error):
             return .failure(error)
         }
     }
 
-    private func fetchImages(for speciesList: [Species]) async {
-        await withTaskGroup(of: (String, UIImage?).self) { group in
-            for species in speciesList {
+    private func createDisplayItems(from speciesList: [Species]) async -> [PokemonDisplayItem] {
+        var items: [PokemonDisplayItem] = []
 
-                /*  guard let url = species.imageURL else {
-                    continue
-                }
+        await withTaskGroup(of: PokemonDisplayItem?.self) { group in
+            for species in speciesList {
+                guard let url = species.imageURL else { continue }
 
                 group.addTask {
                     let result = await self.pokeService.fetchImages(from: url)
                     switch result {
                     case .success(let image):
-                        return (species.name, image)
+                        ImageCacheManager.shared.setImage(image, for: species.name)
+                        return PokemonDisplayItem(name: species.name, url: species.url, image: image)
                     case .failure:
-                        return (species.name, nil)
+                        return nil
                     }
                 }
             }
 
-          for await (name, image) in group {
-                if let image {
-                    ImageCacheManager.shared.setImage(image, for: name)
-
-                    DispatchQueue.main.async {
-                        self.delegate?.handleOutput(.showImage(name: name, image: image))
-                    }
-                }*/
+            for await item in group {
+                if let item {
+                    items.append(item)
+                }
             }
         }
+        return items
     }
 }

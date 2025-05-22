@@ -13,14 +13,13 @@ final class PokeListPresenterTests: XCTestCase {
 
     private var presenter: PokeListPresenter!
     private var interactor: MockListInteractor!
-    private var view: MockListView!
+    private var view: MockPokeListView!
     private var router: MockPokeListRouter!
 
-    override func setUp() {
-        super.setUp()
-        
+    override func setUp() async throws {
+        try await super.setUp()
         interactor = MockListInteractor()
-        view = MockListView()
+        view = await MainActor.run { MockPokeListView() }
         router = MockPokeListRouter()
 
         presenter = PokeListPresenter(
@@ -40,163 +39,173 @@ final class PokeListPresenterTests: XCTestCase {
 
     func test_load_triggersInteractorFetchData() {
         // Given
+        let expectation = XCTestExpectation(description: "Wait for fetchData")
         XCTAssertFalse(interactor.fetchDataCalled)
-        let expectation = XCTestExpectation(description: "fetchData called")
-
-        interactor.onFetchDataCalled = {
-            expectation.fulfill()
-        }
 
         // When
         presenter.load()
 
         // Then
-        wait(for: [expectation], timeout: 1.0)
-        XCTAssertTrue(interactor.fetchDataCalled)
-    }
-
-    func test_loadMoreData_triggersInteractorFetchMoreData() {
-        // Given
-        XCTAssertFalse(interactor.fetchMoreDataCalled)
-        let expectation = XCTestExpectation(description: "fetchMoreData called")
-
-        interactor.onFetchMoreDataCalled = {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            XCTAssertTrue(self.interactor.fetchDataCalled)
+            XCTAssertNotNil(self.view.species)
             expectation.fulfill()
         }
 
-        // When
-        presenter.loadMoreData()
-
-        // Then
         wait(for: [expectation], timeout: 1.0)
-        XCTAssertTrue(interactor.fetchMoreDataCalled)
     }
 
-    func test_handleOutput_setLoading_updatesView() {
+
+    func test_load_showsAlertOnFailure() {
+        // Given
+        let expectedError = NetworkError.contentEmptyData
+        interactor.fetchDataResult = .failure(expectedError)
+
+        let expectation = expectation(description: "Wait for presenter.load() to finish")
+
         // When
-        presenter.handleOutput(.setLoading(true))
+        presenter.load()
 
         // Then
-        XCTAssertEqual(view.outputs, [.setLoading(true)])
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            XCTAssertTrue(self.view.showAlertCalled)
+            XCTAssertEqual(self.view.capturedAlert?.message, "Sunucudan geçerli bir veri alınamadı.")
+            XCTAssertEqual(self.view.species, [])
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1.0)
+    }
+
+    func test_prefetchIfNeeded_triggersLoadMoreWhenNearThreshold() {
+        // Given
+        let expectation = XCTestExpectation(description: "Wait for fetchMoreData")
+        XCTAssertFalse(interactor.fetchMoreDataCalled)
 
         // When
-        presenter.handleOutput(.setLoading(false))
+        presenter.prefetchIfNeeded(for: [IndexPath(row: 6, section: 0)])
 
         // Then
-        XCTAssertEqual(view.outputs, [
-            .setLoading(true),
-            .setLoading(false)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            XCTAssertTrue(self.interactor.fetchMoreDataCalled)
+            XCTAssertNotNil(self.view.species)
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1.0)
+    }
+
+    @MainActor
+    func test_prefetchIfNeeded_doesNothingWhenNotNearThreshold() {
+        // Given
+        XCTAssertFalse(interactor.fetchMoreDataCalled)
+
+        // When
+        presenter.prefetchIfNeeded(for: [IndexPath(row: 3, section: 0)])
+
+        // Then
+        XCTAssertFalse(interactor.fetchMoreDataCalled)
+        XCTAssertEqual(view.species, [])
+    }
+
+    func test_loadMore_showsAlertOnFailure() {
+        // Given
+        let expectedError = NetworkError.contentEmptyData
+        interactor.fetchMoreDataResult = .failure(expectedError)
+
+        let expectation = expectation(description: "Wait for presenter.loadMore() to finish")
+
+        // When
+        presenter.prefetchIfNeeded(for: [IndexPath(row: 6, section: 0)])
+
+        // Then
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            XCTAssertTrue(self.view.showAlertCalled)
+            XCTAssertEqual(self.view.capturedAlert?.message, "Sunucudan geçerli bir veri alınamadı.")
+            XCTAssertEqual(self.view.species, [])
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1.0)
+    }
+
+    @MainActor
+    func test_didSelectPoke_navigatesToDetail() async {
+        // Given
+        interactor.fetchDataResult = .success([
+            Species(name: "bulbasaur", url: "https://pokeapi.co/api/v2/pokemon-species/1/"),
+            Species(name: "ivysaur", url: "https://pokeapi.co/api/v2/pokemon/2/")
         ])
-    }
 
-    func test_handleOutput_showPokeList_updatesListAndView() {
-        // Given
-        let mockPokemons = [
-            Species(name: "pikachu", url: "https://pokeapi.co/api/v2/pokemon/25/"),
-            Species(name: "charizard", url: "https://pokeapi.co/api/v2/pokemon/6/")
-        ]
+        presenter.load()
+        try? await Task.sleep(nanoseconds: 100_000_000)
 
         // When
-        presenter.handleOutput(.showPokeList(mockPokemons))
-
-        // Then
-        XCTAssertEqual(view.outputs, [.showPokeList(mockPokemons)])
-        XCTAssertEqual(presenter.pokeList, mockPokemons)
-    }
-
-    func test_handleOutput_showPokeList_appendsDataNotOverwrite() {
-        // Given
-        let firstBatch = [
-            Species(name: "pikachu", url: "https://pokeapi.co/api/v2/pokemon/25/"),
-            Species(name: "charizard", url: "https://pokeapi.co/api/v2/pokemon/6/")
-        ]
-
-        let secondBatch = [
-            Species(name: "arbok", url: "https://pokeapi.co/api/v2/pokemon-species/24/"),
-            Species(name: "sandshrew", url: "https://pokeapi.co/api/v2/pokemon-species/27")
-        ]
-
-        // When
-        presenter.handleOutput(.showPokeList(firstBatch))
-        presenter.handleOutput(.showPokeList(secondBatch))
-
-        // Then
-        XCTAssertEqual(presenter.pokeList, firstBatch + secondBatch)
-    }
-
-    func test_handleOutput_showAlert_forwardsToView() {
-        // Given
-        let error = NetworkError.contentEmptyData
-        let expectedAlert = Alert(message: error.localizedDescription)
-
-        // When
-        presenter.handleOutput(.showAlert(error))
-
-        // Then
-        XCTAssertEqual(view.outputs, [.showAlert(expectedAlert)])
-    }
-
-    func test_didSelectPoke_withValidIndex_navigatesToDetail() {
-        // Given
-        let mockPokemons = [
-            Species(name: "pikachu", url: "https://pokeapi.co/api/v2/pokemon/25/"),
-            Species(name: "charizard", url: "https://pokeapi.co/api/v2/pokemon/6/")
-        ]
-        presenter.handleOutput(.showPokeList(mockPokemons))
-
-        // When
-        presenter.didSelectPoke(at: .zero)
+        presenter.didSelectPoke(at: 0)
 
         // Then
         XCTAssertTrue(router.goToDetailPageCalled)
-        XCTAssertEqual(router.receivedURL, "https://pokeapi.co/api/v2/pokemon/25/")
+        XCTAssertEqual(router.receivedURL, "https://pokeapi.co/api/v2/pokemon-species/1/")
     }
 
-    func test_didSelectPoke_withInvalidIndex_doesNothing() {
+    @MainActor
+    func test_didSelectPoke_invalidIndex_doesNotNavigate() async {
         // Given
-        let mockPokemons = [
-            Species(name: "pikachu", url: "https://pokeapi.co/api/v2/pokemon/25/"),
-            Species(name: "charizard", url: "https://pokeapi.co/api/v2/pokemon/6/")
-        ]
-        presenter.handleOutput(.showPokeList(mockPokemons))
+        interactor.fetchDataResult = .success([
+            Species(name: "bulbasaur", url: "https://pokeapi.co/api/v2/pokemon-species/1/"),
+            Species(name: "ivysaur", url: "https://pokeapi.co/api/v2/pokemon/2/")
+        ])
+
+        presenter.load()
+        try? await Task.sleep(nanoseconds: 100_000_000)
 
         // When
-        presenter.didSelectPoke(at: 3)
+        presenter.didSelectPoke(at: 5)
 
         // Then
         XCTAssertFalse(router.goToDetailPageCalled)
+        XCTAssertNil(router.receivedURL)
     }
 }
 
 
 // MARK: - PokeListViewProtocol
 
-private final class MockListView: PokeListViewProtocol {
-    var outputs: [PokeListPresenterOutput] = []
+@MainActor
+final class MockPokeListView: PokeListViewProtocol {
+    private(set) var capturedAlert: Alert?
+    private(set) var showAlertCalled = false
+    private(set) var species: [Species] = []
 
-    func handleOutput(_ output: PokeListPresenterOutput) {
-        outputs.append(output)
+    func showPokeList(species: [Species]) {
+        self.species = species
     }
+
+    func showAlert(alert: Alert) {
+        showAlertCalled = true
+        capturedAlert = alert
+    }
+
+    func showLoading(isLoading: Bool) { }
 }
 
 // MARK: - PokeListInteractorProtocol
 
 private final class MockListInteractor: PokeListInteractorProtocol {
-    var delegate: (any PokeListInteractorDelegate)?
-    var fetchDataCalled = false
-    var onFetchDataCalled: (() -> Void)?
+    var fetchDataResult: Result<[Species], Error> = .success([])
+    var fetchMoreDataResult: Result<[Species], Error> = .success([])
 
-    var fetchMoreDataCalled = false
-    var onFetchMoreDataCalled: (() -> Void)?
+    private(set) var fetchDataCalled = false
+    private(set) var fetchMoreDataCalled = false
 
-    func fetchData() async {
+    func fetchData() async -> Result<[Species], Error> {
         fetchDataCalled = true
-        onFetchDataCalled?()
+        return fetchDataResult
     }
-    
-    func fetchMoreData() async {
+
+    func fetchMoreData() async -> Result<[Species], Error> {
         fetchMoreDataCalled = true
-        onFetchMoreDataCalled?()
+        return fetchMoreDataResult
     }
 }
 

@@ -9,26 +9,18 @@ import Foundation
 
 // MARK: View
 
+@MainActor
 protocol PokemonDetailViewProtocol: AnyObject {
-    func handleOutput(_ output: PokemonDetailPresenterOutput)
+    func showData(pokemon: Pokemon)
+    func showAlert(alert: Alert)
+    func showLoading(isLoading: Bool)
+    func showInfoView(view: DetailViewType)
 }
 
 // MARK: Interactor
 
 protocol PokemonDetailInteractorProtocol: AnyObject {
-    var delegate: PokemonDetailInteractorDelegate? { get set }
-
-    func fetchData() async
-}
-
-protocol PokemonDetailInteractorDelegate: AnyObject {
-    func handleOutput(_ output: PokemonDetailInteractorOutput)
-}
-
-enum PokemonDetailInteractorOutput {
-    case setLoading(Bool)
-    case showAlert(NetworkError)
-    case showData(Pokemon)
+    func fetchData() async -> Result<Pokemon, NetworkError>
 }
 
 // MARK: Presenter
@@ -36,11 +28,4 @@ enum PokemonDetailInteractorOutput {
 protocol PokemonDetailPresenterProtocol: AnyObject {
     func loadData()
     func selectedControllerTapped(at index: Int)
-}
-
-enum PokemonDetailPresenterOutput {
-    case setLoading(Bool)
-    case showAlert(Alert)
-    case showData(Pokemon)
-    case showInfoView(DetailViewType)
 }

@@ -6,12 +6,12 @@
 //
 
 import XCTest
+
 @testable import PokeVerse
 
 final class PokeListInteractorTests: XCTestCase {
 
     private var interactor: PokeListInteractor!
-    private var presenter: MockPokeListePresenter!
     private var mockNetworkManager: MockNetworkManager!
 
 
@@ -25,170 +25,112 @@ final class PokeListInteractorTests: XCTestCase {
         super.tearDown()
     }
 
-    @MainActor
-    func test_loadInitialData_success() async throws {
+    func test_fetchData_returnsSpeciesList_onSuccess() async throws {
         // Given
         let expectedResponse: PokeSpecies = try mockNetworkManager.loadExpectedData(from: "species")
         let expectedList = expectedResponse.results
 
         // When
-        await interactor.fetchData()
+        let result = await interactor.fetchData()
 
         // Then
-        XCTAssertEqual(
-            presenter.outputs,
-            [
-                .setLoading(true),
-                .setLoading(false),
-                .showPokeList(expectedList)
-            ]
-        )
+        switch result {
+        case .success(let species):
+            XCTAssertEqual(species, expectedList)
+        case .failure:
+            XCTFail("Expected success but got failure")
+        }
     }
 
-    @MainActor
-    func test_fetchData_failure() async {
+    func test_fetchData_returnsFailure_onServiceError() async {
         // Given
         mockNetworkManager.shouldSucceed = false
 
         // When
-        await interactor.fetchData()
+        let result = await interactor.fetchData()
 
         // Then
-        guard case .showAlert(let error) = presenter.outputs.last else {
-            return XCTFail("Expected .showAlert as last output")
+        switch result {
+        case .success:
+            XCTFail("Expected failure but got success")
+        case .failure(let error):
+            XCTAssertNotNil(error)
+            XCTAssertTrue(error is NetworkError)
         }
-
-        XCTAssertEqual(
-            presenter.outputs,
-            [
-                .setLoading(true),
-                .setLoading(false),
-                .showAlert(error)
-            ]
-        )
     }
 
-    @MainActor
     func test_fetchMoreData_success() async throws {
         // Given
-        let expectedResponse: PokeSpecies = try mockNetworkManager.loadExpectedData(from: "species")
-        let firstPageList = expectedResponse.results
+        _ = await interactor.fetchData()
 
-        // When
-        await interactor.fetchData()
-
-        // Then
-        XCTAssertEqual(
-            presenter.outputs,
-            [
-                .setLoading(true),
-                .setLoading(false),
-                .showPokeList(firstPageList)
-            ]
-        )
-
-        // Given
         resetTestEnvironment(with: "speciesMore")
         let secondExpectedResponse: PokeSpecies = try mockNetworkManager.loadExpectedData(from: "speciesMore")
         let secondPageList = secondExpectedResponse.results
 
         // When
-        await interactor.fetchMoreData()
-
+       let result = await interactor.fetchMoreData()
 
         // Then
-        XCTAssertEqual(
-            presenter.outputs,
-            [
-                .setLoading(true),
-                .setLoading(false),
-                .showPokeList(secondPageList)
-            ]
-        )
+        switch result {
+        case .success(let species):
+            XCTAssertEqual(species, secondPageList)
+        case .failure:
+            XCTFail("Expected success but got failure")
+        }
     }
 
-    @MainActor
-    func test_fetchMoreData_failure() async throws {
+    func test_fetchMoreData_failure() async {
         // Given
-        let expectedResponse: PokeSpecies = try mockNetworkManager.loadExpectedData(from: "species")
-        let firstPageList = expectedResponse.results
-
-        // When
-        await interactor.fetchData()
-
-        // Then
-        XCTAssertEqual(
-            presenter.outputs,
-            [
-                .setLoading(true),
-                .setLoading(false),
-                .showPokeList(firstPageList)
-            ]
-        )
-
-        // Given
+       _ = await interactor.fetchData()
         mockNetworkManager.shouldSucceed = false
+
         resetTestEnvironment(with: "speciesMore")
 
         // When
-        await interactor.fetchMoreData()
+       let result = await interactor.fetchMoreData()
 
 
         // Then
-        guard case .showAlert(let error) = presenter.outputs.last else {
-            return XCTFail("Expected .showAlert as last output")
+        switch result {
+        case .success:
+            XCTFail("Expected failure but got success")
+        case .failure(let error):
+            XCTAssertNotNil(error)
+            XCTAssertTrue(error is NetworkError)
         }
-        XCTAssertEqual(
-            presenter.outputs,
-            [
-                .setLoading(true),
-                .setLoading(false),
-                .showAlert(error)
-            ]
-        )
     }
 
     func test_fetchMoreData_whenNextURLIsNil_doesNotFetchData() async {
         // When
-        await interactor.fetchMoreData()
+        let result = await interactor.fetchMoreData()
 
         // Then
-        XCTAssertEqual(presenter.outputs.count, .zero)
+        switch result {
+        case .success:
+            XCTFail("Expected failure but got success")
+        case .failure(let error):
+            guard let networkError = error as? NetworkError else {
+                return XCTFail("Expected NetworkError but got different error")
+            }
+            XCTAssertEqual(networkError, .contentEmptyData)
+        }
     }
 
     // MARK: - Helper Methods
 
     private func setupTestEnvironment(with mockFile: String) {
-        presenter = MockPokeListePresenter()
         mockNetworkManager = MockNetworkManager()
         let service = PokemonListService(networkManager: mockNetworkManager)
         interactor = PokeListInteractor(pokeService: service)
-        interactor.delegate = presenter
     }
 
     private func resetTestEnvironment(with mockFile: String) {
         mockNetworkManager.updateMockFile(mockFile)
-        presenter.clearOutputs()
     }
 
     private func cleanUpTestEnvironment() {
         interactor = nil
-        presenter = nil
         mockNetworkManager = nil
-    }
-}
-
-// MARK: - PokeListInteractorDelegate
-
-private final class MockPokeListePresenter: PokeListInteractorDelegate {
-    var outputs: [PokeListInteractorOutput] = []
-
-    func handleOutput(_ output: PokeListInteractorOutput) {
-        outputs.append(output)
-    }
-
-    func clearOutputs() {
-        outputs.removeAll()
     }
 }
 
