@@ -51,7 +51,9 @@ final class PokeListInteractor: PokeListInteractorProtocol {
 
         await withTaskGroup(of: PokemonDisplayItem?.self) { group in
             for species in speciesList {
-                guard let url = species.imageURL else { continue }
+                guard let url = species.imageURL else {
+                    continue
+                }
 
                 group.addTask {
                     let result = await self.pokeService.fetchImages(from: url)

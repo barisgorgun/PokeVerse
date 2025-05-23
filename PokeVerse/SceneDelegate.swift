@@ -25,10 +25,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 return
             }
 
-            let viewController = PokeListBuilder.build()
-            let navigationController = UINavigationController(rootViewController: viewController)
-            navigationController.applyDefaultAppearance()
-            self.window?.rootViewController = navigationController
+            let tabBarController = MainTabBarController()
+            self.window?.rootViewController = tabBarController
         }
 
         window?.rootViewController = splashVC
