@@ -51,3 +51,13 @@ struct PokemonDisplayItem {
     let image: UIImage
     var isFavorite: Bool
 }
+
+extension PokemonDisplayItem {
+    init(from favorite: FavoritePokemon, image: UIImage) {
+        self.id = favorite.id
+        self.name = favorite.name
+        self.url = ""
+        self.image = image
+        self.isFavorite = true
+    }
+}

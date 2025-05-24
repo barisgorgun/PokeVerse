@@ -213,7 +213,7 @@ private extension PokemonDetailViewController {
         typeLabel.backgroundColor = PokemonTypeColor.color(for: pokemon.speciesDetail.color.name).withAlphaComponent(0.2)
         typeLabel.textColor = PokemonTypeColor.color(for: pokemon.speciesDetail.color.name)
         descriptionLabel.text = pokemon.speciesDetail.getLatestFlavorText()
-        headerImageView.image = ImageCacheManager.shared.getImage(for: pokemon.speciesDetail.name)
+        headerImageView.image = ImageCacheManager.shared.getImage(for: "\(pokemon.speciesDetail.id)")
         gradientLayer.colors = [PokemonTypeColor.color(for: pokemon.speciesDetail.color.name).cgColor, UIColor.systemBackground.cgColor]
     }
 

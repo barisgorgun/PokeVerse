@@ -81,9 +81,10 @@ final class PokeListInteractor: PokeListInteractorProtocol {
                     let result = await self.pokeService.fetchImages(from: url)
                     switch result {
                     case .success(let image):
-                        ImageCacheManager.shared.setImage(image, for: species.name)
+                        let pokemonID = species.pokemonID.zeroIfNone()
+                        ImageCacheManager.shared.setImage(image, for: "\(pokemonID)")
                         return PokemonDisplayItem(
-                            id: "\(species.pokemonID.zeroIfNone())",
+                            id: "\(pokemonID)",
                             name: species.name,
                             url: species.url,
                             image: image,

@@ -29,6 +29,8 @@ protocol PokeListInteractorProtocol: AnyObject {
 // MARK: - Presenter
 
 protocol PokeListPresenterProtocol: AnyObject {
+    var view: PokeListViewProtocol? { get set }
+
     func load()
     func didSelectPoke(at index: Int)
     func prefetchIfNeeded(for indexPaths: [IndexPath])

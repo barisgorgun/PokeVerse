@@ -77,8 +77,8 @@ final class EvolutionDetailView: UIView {
         let stages = parseEvolutionChain(evolution)
         stages.forEach { stage in
                 let stageView = createEvolutionStageView(
-                    pokemonName: stage.name,
-                    formattedName: stage.name.capitalized,
+                    pokemonId: stage.id,
+                    pokemonName: stage.name.capitalized,
                     method: stage.method.capitalized
                 )
 
@@ -90,12 +90,12 @@ final class EvolutionDetailView: UIView {
         }
     }
 
-    private func createEvolutionStageView(pokemonName: String, formattedName: String, method: String) -> UIView {
+    private func createEvolutionStageView(pokemonId: Int, pokemonName: String, method: String) -> UIView {
         let container = UIView()
 
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.image = ImageCacheManager.shared.getImage(for: pokemonName)
+        imageView.image = ImageCacheManager.shared.getImage(for: "\(pokemonId)")
 
         let nameLabel = UILabel()
         nameLabel.text = pokemonName
@@ -162,16 +162,17 @@ final class EvolutionDetailView: UIView {
     }
 
     private func parseEvolutionChain(_ chain: ChainLink) -> [(
+        id: Int,
         name: String,
         url: String,
         method: String
     )] {
-        var result = [(String, String, String)]()
+        var result = [(Int, String, String, String)]()
         var currentLink: ChainLink? = chain
 
         while let link = currentLink {
             let method = link.evolvesTo.first?.species.name ?? "Level Up"
-            result.append((link.species.name, link.species.url, method))
+            result.append((link.species.pokemonID.zeroIfNone(), link.species.name, link.species.url, method))
             currentLink = link.evolvesTo.first
         }
 

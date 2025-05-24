@@ -23,7 +23,11 @@ class MainTabBarController: UITabBarController {
         listNav.navigationBar.prefersLargeTitles = true
         listNav.applyDefaultAppearance()
 
-        let favoriteVC = UIViewController()
+        let dataStore = FavoritePokemonDataStore()
+        let interactor = FavoriteListInteractor(dataStore: dataStore)
+        let favoriteListPresenter = FavoriteListPresenter(view: nil, interactor: interactor)
+        let favoriteVC = FavoriteListViewController(favoriteListPresenter: favoriteListPresenter)
+        favoriteListPresenter.view = favoriteVC
         let favoriteNav = UINavigationController(rootViewController: favoriteVC)
         favoriteNav.tabBarItem = UITabBarItem(title: "Favoriler", image: UIImage(systemName: "star.fill"), tag: 1)
         favoriteNav.navigationBar.prefersLargeTitles = true
