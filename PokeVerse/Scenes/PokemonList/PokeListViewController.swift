@@ -86,8 +86,10 @@ extension PokeListViewController: UITableViewDataSource, UITableViewDelegate {
             return UITableViewCell()
         }
 
-        let species = pokeList[indexPath.row]
+        var species = pokeList[indexPath.row]
+        species.isFavorite = pokeListPresenter.isFavorite(at: species.id)
         cell.configure(species: species)
+        cell.delegate = self
         return cell
     }
 
@@ -116,6 +118,11 @@ extension PokeListViewController: UITableViewDataSourcePrefetching {
 // MARK: - PokeListViewProtocol
 
 extension PokeListViewController: PokeListViewProtocol {
+
+    func updateFavoriteStatus(at indexPath: IndexPath, isFavorite: Bool) {
+        pokeList[indexPath.row].isFavorite = isFavorite
+        tableView.reloadRows(at: [indexPath], with: .none)
+    }
     
     func showPokeList(species: [PokemonDisplayItem]) {
         self.pokeList = species
@@ -128,5 +135,17 @@ extension PokeListViewController: PokeListViewProtocol {
     
     func showLoading(isLoading: Bool) {
         self.navigationController?.view.setLoading(isLoading)
+    }
+}
+
+// MARK: - PokemonListCellDelegate
+
+extension PokeListViewController: PokemonListCellDelegate {
+
+    func didTapFavoriteButton(on cell: PokemonCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else {
+            return
+        }
+        pokeListPresenter.didTapFavorite(at: indexPath)
     }
 }

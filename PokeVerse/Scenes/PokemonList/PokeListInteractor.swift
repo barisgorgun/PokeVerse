@@ -11,9 +11,11 @@ final class PokeListInteractor: PokeListInteractorProtocol {
 
     private let pokeService: PokemonListServiceProtocol
     private var nextURL: String?
+    private let dataStore: FavoritePokemonDataStoreProtocol
 
-    init(pokeService: PokemonListServiceProtocol) {
+    init(pokeService: PokemonListServiceProtocol, dataStore: FavoritePokemonDataStoreProtocol) {
         self.pokeService = pokeService
+        self.dataStore = dataStore
     }
 
     func fetchData() async -> Result<[PokemonDisplayItem], NetworkError> {
@@ -46,6 +48,26 @@ final class PokeListInteractor: PokeListInteractorProtocol {
         }
     }
 
+    func toggleFavorite(for pokemon: PokemonDisplayItem) throws -> Bool {
+        let isFavorite = isFavorite(pokemon.id)
+
+        do {
+            if isFavorite {
+                try dataStore.removeFavorite(with: pokemon.id)
+                return false
+            } else {
+                try dataStore.saveFavorite(id: pokemon.id, name: pokemon.name)
+                return true
+            }
+        } catch {
+            throw error
+        }
+    }
+
+    func isFavorite(_ id: String) -> Bool {
+        dataStore.isFavorite(id: id)
+    }
+
     private func createDisplayItems(from speciesList: [Species]) async -> [PokemonDisplayItem] {
         var items: [PokemonDisplayItem] = []
 
@@ -60,7 +82,13 @@ final class PokeListInteractor: PokeListInteractorProtocol {
                     switch result {
                     case .success(let image):
                         ImageCacheManager.shared.setImage(image, for: species.name)
-                        return PokemonDisplayItem(name: species.name, url: species.url, image: image)
+                        return PokemonDisplayItem(
+                            id: "\(species.pokemonID.zeroIfNone())",
+                            name: species.name,
+                            url: species.url,
+                            image: image,
+                            isFavorite: false
+                        )
                     case .failure:
                         return nil
                     }

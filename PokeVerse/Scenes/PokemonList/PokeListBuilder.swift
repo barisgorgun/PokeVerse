@@ -14,7 +14,8 @@ struct PokeListBuilder {
     static func build() -> UIViewController {
         let pokeListService = PokemonListService()
         let router = PokeListRouter()
-        let interactor = PokeListInteractor(pokeService: pokeListService)
+        let dataStore = FavoritePokemonDataStore()
+        let interactor = PokeListInteractor(pokeService: pokeListService, dataStore: dataStore)
 
         let presenter = PokeListPresenter(
             view: nil,

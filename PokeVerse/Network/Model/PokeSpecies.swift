@@ -45,7 +45,9 @@ extension Species {
 
 
 struct PokemonDisplayItem {
+    let id: String
     let name: String
     let url: String
     let image: UIImage
+    var isFavorite: Bool
 }

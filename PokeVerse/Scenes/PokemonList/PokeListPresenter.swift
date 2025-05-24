@@ -67,6 +67,23 @@ final class PokeListPresenter: PokeListPresenterProtocol {
         }
     }
 
+    func didTapFavorite(at indexPath: IndexPath) {
+        Task {
+            let pokemon = pokeList[indexPath.row]
+            do {
+                let isFavorite = try interactor.toggleFavorite(for: pokemon)
+                await view?.updateFavoriteStatus(at: indexPath, isFavorite: isFavorite)
+            } catch {
+                let alert = Alert(message: NetworkError.fileNotFound.userMessage)
+                await view?.showAlert(alert: alert)
+            }
+        }
+    }
+
+    func isFavorite(at id: String) -> Bool {
+        interactor.isFavorite(id)
+    }
+
     private func loadMoreData() {
         Task {
             await view?.showLoading(isLoading: true)
