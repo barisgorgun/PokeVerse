@@ -42,22 +42,3 @@ extension Species {
         return components.last.map { String($0) }
     }
 }
-
-
-struct PokemonDisplayItem {
-    let id: String
-    let name: String
-    let url: String
-    let image: UIImage
-    var isFavorite: Bool
-}
-
-extension PokemonDisplayItem {
-    init(from favorite: FavoritePokemon, image: UIImage) {
-        self.id = favorite.id
-        self.name = favorite.name
-        self.url = ""
-        self.image = image
-        self.isFavorite = true
-    }
-}

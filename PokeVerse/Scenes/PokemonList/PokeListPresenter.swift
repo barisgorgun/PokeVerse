@@ -69,12 +69,22 @@ final class PokeListPresenter: PokeListPresenterProtocol {
 
     func didTapFavorite(at indexPath: IndexPath) {
         Task {
+            guard pokeList.indices.contains(indexPath.row) else {
+                return
+            }
             let pokemon = pokeList[indexPath.row]
             do {
                 let isFavorite = try interactor.toggleFavorite(for: pokemon)
+                pokeList[indexPath.row].isFavorite = isFavorite
                 await view?.updateFavoriteStatus(at: indexPath, isFavorite: isFavorite)
+                EventCenter.post(.favoriteStatusChanged, userInfo: ["id": pokemon.id, "isFavorite": pokemon.isFavorite])
+            } catch let error as CoreDataError {
+                let alert = Alert(message: error.localizedDescription)
+                await view?.showAlert(alert: alert)
             } catch {
-                let alert = Alert(message: NetworkError.fileNotFound.userMessage)
+
+                // TODO: will be add loc.
+                let alert = Alert(message: "Beklenmeyen bir hata oluştu.")
                 await view?.showAlert(alert: alert)
             }
         }
@@ -101,6 +111,16 @@ final class PokeListPresenter: PokeListPresenterProtocol {
                 let alert = Alert(message: error.userMessage)
                 await view?.showAlert(alert: alert)
             }
+        }
+    }
+
+    func didReceiveFavoriteRemoval(for id: String) {
+        guard let index = pokeList.firstIndex(where: { $0.id == id }) else {
+            return
+        }
+        pokeList[index].isFavorite = false
+        Task {
+            await view?.updateFavoriteStatus(at: IndexPath(row: index, section: 0), isFavorite: false)
         }
     }
 }

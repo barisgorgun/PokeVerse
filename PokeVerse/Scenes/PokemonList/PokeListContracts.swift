@@ -36,6 +36,7 @@ protocol PokeListPresenterProtocol: AnyObject {
     func prefetchIfNeeded(for indexPaths: [IndexPath])
     func didTapFavorite(at indexPath: IndexPath)
     func isFavorite(at id: String) -> Bool
+    func didReceiveFavoriteRemoval(for id: String)
 }
 
 // MARK: - Router

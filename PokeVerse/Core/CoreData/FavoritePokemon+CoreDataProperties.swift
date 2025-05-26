@@ -16,6 +16,7 @@ extension FavoritePokemon {
 
     @NSManaged public var id: String
     @NSManaged public var name: String
+    @NSManaged public var url: String
 }
 
 extension FavoritePokemon: Identifiable {}

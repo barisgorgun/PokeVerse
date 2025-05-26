@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class PokemonDetailViewController: UIViewController, AlertPresentable {
+final class PokemonDetailViewController: UIViewController {
 
     // MARK: - Constants
 

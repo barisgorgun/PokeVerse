@@ -27,8 +27,6 @@ class FavoriteListViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        favoriteListPresenter.load()
         
         favoriteListTableView.dataSource = self
         favoriteListTableView.delegate = self
@@ -41,7 +39,14 @@ class FavoriteListViewController: UIViewController {
             favoriteListTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
 
+        EventCenter.observe(self, selector: #selector(handleFavoriteChange), for: .favoriteStatusChanged)
+        
         title = "Favoriler"
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        favoriteListPresenter.load()
     }
 
     init(favoriteListPresenter: FavoriteListPresenterProtocol) {
@@ -51,6 +56,14 @@ class FavoriteListViewController: UIViewController {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    deinit {
+        EventCenter.remove(self, for: .favoriteStatusChanged)
+    }
+
+    @objc private func handleFavoriteChange(notification: Notification) {
+        favoriteListPresenter.didReceiveFavoriteChange()
     }
 }
 
@@ -74,11 +87,19 @@ extension FavoriteListViewController: UITableViewDataSource, UITableViewDelegate
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         Constants.cellHeight
     }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        favoriteListPresenter.didSelectPoke(at: indexPath.row)
+    }
 }
 
 // MARK: - FavoriteListViewProtocol
 
 extension FavoriteListViewController: FavoriteListViewProtocol {
+    
+    func showAlert(alert: Alert) {
+        show(alert: alert, style: .alert)
+    }
 
     func reloadData(with species: [PokemonDisplayItem]) {
         favoriteList = species

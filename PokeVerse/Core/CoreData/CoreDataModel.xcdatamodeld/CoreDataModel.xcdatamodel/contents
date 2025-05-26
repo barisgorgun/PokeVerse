@@ -3,5 +3,6 @@
     <entity name="FavoritePokemon" representedClassName=".FavoritePokemon" syncable="YES">
         <attribute name="id" attributeType="String"/>
         <attribute name="name" attributeType="String"/>
+        <attribute name="url" optional="YES" attributeType="String"/>
     </entity>
 </model>

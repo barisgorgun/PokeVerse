@@ -36,7 +36,7 @@ enum NetworkError: LocalizedError, Equatable {
             "error_contentDecoding_description".localized()
         case .invalidURL:
             "error_invalidURL_description".localized()
-        case .serverError(let code):
+        case .serverError:
             "error_serverError_description".localized()
         case .custom(let message):
              message
@@ -57,7 +57,7 @@ extension NetworkError {
             "error_contentDecoding_message".localized()
         case .invalidURL:
             "error_invalidURL_message".localized()
-        case .serverError(let code):
+        case .serverError:
             "error_serverError_message".localized()
         case .custom(let message):
             message

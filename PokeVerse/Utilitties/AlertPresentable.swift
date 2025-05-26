@@ -53,3 +53,7 @@ extension AlertAction.Style {
         }
     }
 }
+
+extension UIViewController: AlertPresentable {
+    
+}

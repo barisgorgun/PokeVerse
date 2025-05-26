@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class PokeListViewController: UIViewController, AlertPresentable {
+final class PokeListViewController: UIViewController {
 
     // MARK: - Constants
 
@@ -31,6 +31,7 @@ final class PokeListViewController: UIViewController, AlertPresentable {
         title = "pokeList_title".localized()
         setupTableView()
         pokeListPresenter.load()
+        EventCenter.observe(self, selector: #selector(handleFavoriteRemoved), for: .favoriteStatusChanged)
     }
 
     init(pokeListPresenter: PokeListPresenterProtocol) {
@@ -49,6 +50,11 @@ final class PokeListViewController: UIViewController, AlertPresentable {
         if let selectedIndexPath = tableView.indexPathForSelectedRow {
             tableView.deselectRow(at: selectedIndexPath, animated: true)
         }
+    }
+
+    @objc private func handleFavoriteRemoved(notification: Notification) {
+        guard let id = notification.userInfo?["id"] as? String else { return }
+        pokeListPresenter?.didReceiveFavoriteRemoval(for: id)
     }
 }
 
@@ -120,6 +126,9 @@ extension PokeListViewController: UITableViewDataSourcePrefetching {
 extension PokeListViewController: PokeListViewProtocol {
 
     func updateFavoriteStatus(at indexPath: IndexPath, isFavorite: Bool) {
+        guard pokeList.indices.contains(indexPath.row) else {
+            return
+        }
         pokeList[indexPath.row].isFavorite = isFavorite
         tableView.reloadRows(at: [indexPath], with: .none)
     }

@@ -10,7 +10,7 @@ import CoreData
 
 
 protocol FavoritePokemonDataStoreProtocol {
-    func saveFavorite(id: String, name: String) throws
+    func saveFavorite(id: String, name: String, url: String) throws
     func removeFavorite(with id: String) throws
     func isFavorite(id: String) -> Bool
     func getAllFavorites() -> [FavoritePokemon]
@@ -30,7 +30,7 @@ final class FavoritePokemonDataStore: FavoritePokemonDataStoreProtocol {
 
     // MARK: - Public Methods
 
-    func saveFavorite(id: String, name: String) throws {
+    func saveFavorite(id: String, name: String, url: String) throws {
         if  isFavorite(id: id) {
             throw CoreDataError.duplicateEntry
         }
@@ -39,13 +39,10 @@ final class FavoritePokemonDataStore: FavoritePokemonDataStoreProtocol {
             throw CoreDataError.invalidData
         }
 
-        guard context.persistentStoreCoordinator != nil else {
-            throw CoreDataError.contextNotAvailable
-        }
-
         let favorite = FavoritePokemon(context: context)
         favorite.id = id
         favorite.name = name
+        favorite.url = url
 
         do {
             try context.save()
@@ -76,7 +73,7 @@ final class FavoritePokemonDataStore: FavoritePokemonDataStoreProtocol {
             results.forEach { context.delete($0) }
             try context.save()
         } catch {
-            throw CoreDataError.unknownError
+            throw CoreDataError.saveError(error)
         }
     }
 

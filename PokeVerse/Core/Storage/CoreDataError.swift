@@ -14,7 +14,7 @@ enum CoreDataError: Error {
     case invalidData
     case itemNotFound
     case contextNotAvailable
-    case unknownError
+    case unknownError(Error)
 
     var localizedDescription: String {
         switch self {
@@ -30,8 +30,8 @@ enum CoreDataError: Error {
             return "Favori bulunamadı"
         case .contextNotAvailable:
             return "Veritabanı bağlantısı yok"
-        case .unknownError:
-            return "Bilinmeyen bir hata oluştu"
+        case .unknownError(let error):
+            return "Bilinmeyen bir hata oluştu \(error.localizedDescription)"
         }
     }
 }

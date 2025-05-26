@@ -12,6 +12,7 @@ import Foundation
 @MainActor
 protocol FavoriteListViewProtocol: AnyObject {
     func reloadData(with species: [PokemonDisplayItem])
+    func showAlert(alert: Alert)
 }
 
 // MARK: - Presenter
@@ -20,7 +21,9 @@ protocol FavoriteListPresenterProtocol: AnyObject {
     var view: FavoriteListViewProtocol? { get set }
 
     func load()
+    func didSelectPoke(at index: Int)
     func didTapFavorite(at indexPath: IndexPath)
+    func didReceiveFavoriteChange()
 }
 
 // MARK: - Interactor

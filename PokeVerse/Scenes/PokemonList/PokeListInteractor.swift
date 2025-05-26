@@ -51,16 +51,16 @@ final class PokeListInteractor: PokeListInteractorProtocol {
     func toggleFavorite(for pokemon: PokemonDisplayItem) throws -> Bool {
         let isFavorite = isFavorite(pokemon.id)
 
-        do {
-            if isFavorite {
-                try dataStore.removeFavorite(with: pokemon.id)
-                return false
-            } else {
-                try dataStore.saveFavorite(id: pokemon.id, name: pokemon.name)
-                return true
-            }
-        } catch {
-            throw error
+        if isFavorite {
+            try dataStore.removeFavorite(with: pokemon.id)
+            return false
+        } else {
+            try dataStore.saveFavorite(
+                id: pokemon.id,
+                name: pokemon.name,
+                url: pokemon.url
+            )
+            return true
         }
     }
 
@@ -69,10 +69,10 @@ final class PokeListInteractor: PokeListInteractorProtocol {
     }
 
     private func createDisplayItems(from speciesList: [Species]) async -> [PokemonDisplayItem] {
-        var items: [PokemonDisplayItem] = []
+        var items = Array<PokemonDisplayItem?>(repeating: nil, count: speciesList.count)
 
-        await withTaskGroup(of: PokemonDisplayItem?.self) { group in
-            for species in speciesList {
+        await withTaskGroup(of: (Int, PokemonDisplayItem?).self) { group in
+            for (index, species) in speciesList.enumerated() {
                 guard let url = species.imageURL else {
                     continue
                 }
@@ -83,25 +83,25 @@ final class PokeListInteractor: PokeListInteractorProtocol {
                     case .success(let image):
                         let pokemonID = species.pokemonID.zeroIfNone()
                         ImageCacheManager.shared.setImage(image, for: "\(pokemonID)")
-                        return PokemonDisplayItem(
+                        let item = PokemonDisplayItem(
                             id: "\(pokemonID)",
                             name: species.name,
                             url: species.url,
                             image: image,
                             isFavorite: false
                         )
+                        return (index, item)
                     case .failure:
-                        return nil
+                        return (index, nil)
                     }
                 }
             }
 
-            for await item in group {
-                if let item {
-                    items.append(item)
-                }
+            for await (index, item) in group {
+                items[index] = item
             }
         }
-        return items
+
+        return items.compactMap { $0 }
     }
 }
