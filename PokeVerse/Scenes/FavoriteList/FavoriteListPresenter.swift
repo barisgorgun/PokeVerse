@@ -24,10 +24,11 @@ final class FavoriteListPresenter: FavoriteListPresenterProtocol {
     }
 
     func load() {
-        favoriteList = interactor.getFavoriteList()
-
         Task {
+            await view?.showLoading(isLoading: true)
+            favoriteList = await interactor.getFavoriteList()
             await view?.reloadData(with: favoriteList)
+            await view?.showLoading(isLoading: false)
         }
     }
 
@@ -60,7 +61,7 @@ final class FavoriteListPresenter: FavoriteListPresenterProtocol {
 
     func didReceiveFavoriteChange() {
         Task {
-            let updatedFavorites = interactor.getFavoriteList()
+            let updatedFavorites = await interactor.getFavoriteList()
             await view?.reloadData(with: updatedFavorites)
         }
     }

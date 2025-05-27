@@ -25,7 +25,7 @@ class MainTabBarController: UITabBarController {
 
         let favoriteVC = FavoriteListBuilder.build()
         let favoriteNav = UINavigationController(rootViewController: favoriteVC)
-        favoriteNav.tabBarItem = UITabBarItem(title: "Favoriler", image: UIImage(systemName: "star.fill"), tag: 1)
+        favoriteNav.tabBarItem = UITabBarItem(title: "favorite_title".localized(), image: UIImage(systemName: "star.fill"), tag: 1)
         favoriteNav.navigationBar.prefersLargeTitles = true
         favoriteNav.applyDefaultAppearance()
 

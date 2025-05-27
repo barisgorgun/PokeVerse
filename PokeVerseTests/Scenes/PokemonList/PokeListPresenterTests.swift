@@ -9,6 +9,7 @@ import XCTest
 
 @testable import PokeVerse
 
+@MainActor
 final class PokeListPresenterTests: XCTestCase {
 
     private var presenter: PokeListPresenter!
@@ -37,127 +38,103 @@ final class PokeListPresenterTests: XCTestCase {
         super.tearDown()
     }
 
-    func test_load_triggersInteractorFetchData() {
+    func test_load_showsAndHidesLoading() async {
         // Given
-        let expectation = XCTestExpectation(description: "Wait for fetchData")
+        interactor.fetchDataResult = .success([PokemonDisplayItem.mock()])
+
+        // When
+        await presenter.load()
+
+        // Then
+        XCTAssertEqual(view.loadingStates, [true, false])
+    }
+
+    func test_load_triggersInteractorFetchData() async {
+        // Given
         XCTAssertFalse(interactor.fetchDataCalled)
 
         // When
-        presenter.load()
+        await presenter.load()
 
         // Then
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            XCTAssertTrue(self.interactor.fetchDataCalled)
-            XCTAssertNotNil(self.view.species)
-            expectation.fulfill()
-        }
-
-        wait(for: [expectation], timeout: 1.0)
+        XCTAssertTrue(interactor.fetchDataCalled)
+        XCTAssertNotNil(view.species)
     }
 
-
-    func test_load_showsAlertOnFailure() {
+    func test_load_showsAlertOnFailure() async{
         // Given
         let expectedError = NetworkError.contentEmptyData
         interactor.fetchDataResult = .failure(expectedError)
 
-        let expectation = expectation(description: "Wait for presenter.load() to finish")
-
         // When
-        presenter.load()
+        await presenter.load()
 
         // Then
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            XCTAssertTrue(self.view.showAlertCalled)
-            XCTAssertEqual(self.view.capturedAlert?.message, "Sunucudan geçerli bir veri alınamadı.")
-            XCTAssertEqual(self.view.species, [])
-            expectation.fulfill()
-        }
-
-        wait(for: [expectation], timeout: 1.0)
+        XCTAssertTrue(view.showAlertCalled)
+        XCTAssertEqual(view.capturedAlert?.message, "error_contentEmptyData_message".localized())
+        XCTAssertEqual(view.species.count, .zero)
     }
 
-    func test_prefetchIfNeeded_triggersLoadMoreWhenNearThreshold() {
-        // Given
-        let expectation = XCTestExpectation(description: "Wait for fetchMoreData")
-        XCTAssertFalse(interactor.fetchMoreDataCalled)
-
-        // When
-        presenter.prefetchIfNeeded(for: [IndexPath(row: 6, section: 0)])
-
-        // Then
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            XCTAssertTrue(self.interactor.fetchMoreDataCalled)
-            XCTAssertNotNil(self.view.species)
-            expectation.fulfill()
-        }
-
-        wait(for: [expectation], timeout: 1.0)
-    }
-
-    @MainActor
-    func test_prefetchIfNeeded_doesNothingWhenNotNearThreshold() {
+    func test_prefetchIfNeeded_triggersLoadMoreWhenNearThreshold() async {
         // Given
         XCTAssertFalse(interactor.fetchMoreDataCalled)
 
         // When
-        presenter.prefetchIfNeeded(for: [IndexPath(row: 3, section: 0)])
+        await presenter.prefetchIfNeeded(for: [IndexPath(row: 6, section: 0)])
+
+        // Then
+        XCTAssertTrue(interactor.fetchMoreDataCalled)
+        XCTAssertNotNil(view.species)
+    }
+
+    func test_prefetchIfNeeded_doesNothingWhenNotNearThreshold() async {
+        // Given
+        presenter.pokeList = Array(repeating: PokemonDisplayItem.mock(), count: 10)
+        XCTAssertFalse(interactor.fetchMoreDataCalled)
+
+        // When
+        await presenter.prefetchIfNeeded(for: [IndexPath(row: 3, section: 0)])
 
         // Then
         XCTAssertFalse(interactor.fetchMoreDataCalled)
-        XCTAssertEqual(view.species, [])
+        XCTAssertEqual(view.species.count, .zero)
     }
 
-    func test_loadMore_showsAlertOnFailure() {
+    func test_loadMore_showsAlertOnFailure() async{
         // Given
         let expectedError = NetworkError.contentEmptyData
         interactor.fetchMoreDataResult = .failure(expectedError)
 
-        let expectation = expectation(description: "Wait for presenter.loadMore() to finish")
-
         // When
-        presenter.prefetchIfNeeded(for: [IndexPath(row: 6, section: 0)])
+        await presenter.prefetchIfNeeded(for: [IndexPath(row: 6, section: 0)])
 
         // Then
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            XCTAssertTrue(self.view.showAlertCalled)
-            XCTAssertEqual(self.view.capturedAlert?.message, "Sunucudan geçerli bir veri alınamadı.")
-            XCTAssertEqual(self.view.species, [])
-            expectation.fulfill()
-        }
-
-        wait(for: [expectation], timeout: 1.0)
+        XCTAssertTrue(view.showAlertCalled)
+        XCTAssertEqual(view.capturedAlert?.message, "error_contentEmptyData_message".localized())
+        XCTAssertEqual(view.species.count, .zero)
     }
 
-    @MainActor
     func test_didSelectPoke_navigatesToDetail() async {
         // Given
-        interactor.fetchDataResult = .success([
-            Species(name: "bulbasaur", url: "https://pokeapi.co/api/v2/pokemon-species/1/"),
-            Species(name: "ivysaur", url: "https://pokeapi.co/api/v2/pokemon/2/")
-        ])
+        let items = PokemonDisplayItem.mock()
+        interactor.fetchDataResult = .success([items])
 
-        presenter.load()
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        await presenter.load()
 
         // When
         presenter.didSelectPoke(at: 0)
 
         // Then
         XCTAssertTrue(router.goToDetailPageCalled)
-        XCTAssertEqual(router.receivedURL, "https://pokeapi.co/api/v2/pokemon-species/1/")
+        XCTAssertEqual(router.receivedURL, "https://pokeapi.co/api/v2/pokemon/1")
     }
 
-    @MainActor
     func test_didSelectPoke_invalidIndex_doesNotNavigate() async {
         // Given
-        interactor.fetchDataResult = .success([
-            Species(name: "bulbasaur", url: "https://pokeapi.co/api/v2/pokemon-species/1/"),
-            Species(name: "ivysaur", url: "https://pokeapi.co/api/v2/pokemon/2/")
-        ])
+        let items = PokemonDisplayItem.mock()
+        interactor.fetchDataResult = .success([items])
 
-        presenter.load()
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        await presenter.load()
 
         // When
         presenter.didSelectPoke(at: 5)
@@ -165,6 +142,85 @@ final class PokeListPresenterTests: XCTestCase {
         // Then
         XCTAssertFalse(router.goToDetailPageCalled)
         XCTAssertNil(router.receivedURL)
+    }
+
+    func test_didTapFavorite_togglesFavoriteStatusAndUpdatesView() async {
+        // Given
+        let pokemon = PokemonDisplayItem.mock(id: "99")
+        interactor.fetchDataResult = .success([pokemon])
+        await presenter.load()
+
+        let indexPath = IndexPath(row: 0, section: 0)
+        interactor.toggleFavoriteShouldSucceed = true
+
+        // When
+        await presenter.didTapFavorite(at: indexPath)
+
+        // Then
+        XCTAssertTrue(interactor.toggleFavoriteCalled)
+        XCTAssertEqual(view.updatedIndexPath, indexPath)
+        XCTAssertEqual(view.updatedFavoriteStatus, true)
+    }
+
+    func test_didTapFavorite_showsAlertOnFailure() async {
+        // Given
+        let pokemon = PokemonDisplayItem.mock(id: "42")
+        interactor.fetchDataResult = .success([pokemon])
+        await presenter.load()
+
+        interactor.toggleFavoriteShouldThrow = true
+        let indexPath = IndexPath(row: 0, section: 0)
+
+        // When
+        await presenter.didTapFavorite(at: indexPath)
+
+        // Then
+        XCTAssertTrue(view.showAlertCalled)
+        XCTAssertEqual(view.capturedAlert?.message, CoreDataError.invalidData.localizedDescription)
+    }
+
+    func test_didTapFavorite_showsGenericAlertOnUnknownError() async {
+        // Given
+        let pokemon = PokemonDisplayItem.mock(id: "77")
+        interactor.fetchDataResult = .success([pokemon])
+        await presenter.load()
+
+        interactor.toggleFavoriteShouldThrowUnknownError = true
+        let indexPath = IndexPath(row: 0, section: 0)
+
+        // When
+        await presenter.didTapFavorite(at: indexPath)
+
+        // Then
+        XCTAssertTrue(view.showAlertCalled)
+        XCTAssertEqual(view.capturedAlert?.message, "error_unexpected_message".localized())
+    }
+
+    func test_didReceiveFavoriteRemoval_updatesFavoriteStatus() async {
+        // Given
+        let pokemon = PokemonDisplayItem.mock(id: "100", isFavorite: true)
+        interactor.fetchDataResult = .success([pokemon])
+        await presenter.load()
+
+        // When
+        await presenter.didReceiveFavoriteRemoval(for: "100")
+
+        // Then
+        XCTAssertEqual(view.updatedIndexPath?.row, 0)
+        XCTAssertEqual(view.updatedFavoriteStatus, false)
+    }
+
+    func test_isFavorite_returnsInteractorResult() {
+        // Given
+        let interactor = MockListInteractor()
+        interactor.favoriteIDs = ["123"]
+        presenter = PokeListPresenter(view: view, interactor: interactor, router: router)
+
+        // When
+        let result = presenter.isFavorite(at: "123")
+
+        // Then
+        XCTAssertTrue(result)
     }
 }
 
@@ -175,9 +231,12 @@ final class PokeListPresenterTests: XCTestCase {
 final class MockPokeListView: PokeListViewProtocol {
     private(set) var capturedAlert: Alert?
     private(set) var showAlertCalled = false
-    private(set) var species: [Species] = []
+    private(set) var species: [PokemonDisplayItem] = []
+    private(set) var updatedIndexPath: IndexPath?
+    private(set) var updatedFavoriteStatus: Bool?
+    var loadingStates: [Bool] = []
 
-    func showPokeList(species: [Species]) {
+    func showPokeList(species: [PokemonDisplayItem]) {
         self.species = species
     }
 
@@ -186,26 +245,57 @@ final class MockPokeListView: PokeListViewProtocol {
         capturedAlert = alert
     }
 
-    func showLoading(isLoading: Bool) { }
+    func showLoading(isLoading: Bool) {
+        loadingStates.append(isLoading)
+    }
+
+    func updateFavoriteStatus(at indexPath: IndexPath, isFavorite: Bool) {
+        updatedIndexPath = indexPath
+        updatedFavoriteStatus = isFavorite
+    }
 }
 
 // MARK: - PokeListInteractorProtocol
 
 private final class MockListInteractor: PokeListInteractorProtocol {
-    var fetchDataResult: Result<[Species], Error> = .success([])
-    var fetchMoreDataResult: Result<[Species], Error> = .success([])
+    var fetchDataResult: Result<[PokemonDisplayItem], NetworkError> = .success([])
+    var fetchMoreDataResult: Result<[PokemonDisplayItem], NetworkError> = .success([])
+    var favoriteIDs: [String] = []
 
     private(set) var fetchDataCalled = false
     private(set) var fetchMoreDataCalled = false
 
-    func fetchData() async -> Result<[Species], Error> {
+    var toggleFavoriteShouldSucceed = true
+    var toggleFavoriteCalled = false
+    var toggleFavoriteShouldThrow = false
+    var toggleFavoriteShouldThrowUnknownError = false
+
+    func fetchData() async -> Result<[PokemonDisplayItem], NetworkError> {
         fetchDataCalled = true
         return fetchDataResult
     }
 
-    func fetchMoreData() async -> Result<[Species], Error> {
+    func fetchMoreData() async -> Result<[PokemonDisplayItem], NetworkError> {
         fetchMoreDataCalled = true
         return fetchMoreDataResult
+    }
+
+    func toggleFavorite(for pokemon: PokemonDisplayItem) throws -> Bool {
+        toggleFavoriteCalled = true
+
+        if toggleFavoriteShouldThrow {
+            throw CoreDataError.invalidData
+        }
+
+        if toggleFavoriteShouldThrowUnknownError {
+            throw NSError(domain: "test", code: -999, userInfo: nil)
+        }
+
+        return toggleFavoriteShouldSucceed
+    }
+
+    func isFavorite(_ id: String) -> Bool {
+        favoriteIDs.contains(id)
     }
 }
 

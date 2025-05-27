@@ -18,20 +18,20 @@ enum CoreDataError: Error {
 
     var localizedDescription: String {
         switch self {
-        case .saveError(let error):
-            return "Kayıt işlemi hatası: \(error.localizedDescription)"
-        case .fetchError(let error):
-            return "Veri getirme hatası: \(error.localizedDescription)"
+        case .saveError:
+            "error_save_failed".localized()
+        case .fetchError:
+            "error_fetch_failed".localized()
         case .duplicateEntry:
-            return "Bu öğe zaten kayıtlı"
+            "error_duplicate_favorite".localized()
         case .invalidData:
-            return "Geçersiz veri formatı"
+            "error_invalid_data".localized()
         case .itemNotFound:
-            return "Favori bulunamadı"
+            "error_item_not_found".localized()
         case .contextNotAvailable:
-            return "Veritabanı bağlantısı yok"
-        case .unknownError(let error):
-            return "Bilinmeyen bir hata oluştu \(error.localizedDescription)"
+            "error_context_unavailable".localized()
+        case .unknownError:
+            "error_unknown".localized()
         }
     }
 }

@@ -31,12 +31,12 @@ protocol PokeListInteractorProtocol: AnyObject {
 protocol PokeListPresenterProtocol: AnyObject {
     var view: PokeListViewProtocol? { get set }
 
-    func load()
+    func load() async
     func didSelectPoke(at index: Int)
-    func prefetchIfNeeded(for indexPaths: [IndexPath])
-    func didTapFavorite(at indexPath: IndexPath)
+    func prefetchIfNeeded(for indexPaths: [IndexPath]) async
+    func didTapFavorite(at indexPath: IndexPath) async
     func isFavorite(at id: String) -> Bool
-    func didReceiveFavoriteRemoval(for id: String)
+    func didReceiveFavoriteRemoval(for id: String) async
 }
 
 // MARK: - Router

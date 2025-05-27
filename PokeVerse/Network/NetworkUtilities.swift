@@ -56,7 +56,7 @@ extension NetworkError {
         case .contentDecoding:
             "error_contentDecoding_message".localized()
         case .invalidURL:
-            "error_invalidURL_message".localized()
+            "error_unexpected_message".localized()
         case .serverError:
             "error_serverError_message".localized()
         case .custom(let message):

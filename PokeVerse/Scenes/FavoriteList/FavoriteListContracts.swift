@@ -12,6 +12,7 @@ import Foundation
 @MainActor
 protocol FavoriteListViewProtocol: AnyObject {
     func reloadData(with species: [PokemonDisplayItem])
+    func showLoading(isLoading: Bool)
     func showAlert(alert: Alert)
 }
 
@@ -30,7 +31,7 @@ protocol FavoriteListPresenterProtocol: AnyObject {
 
 protocol FavoriteListInteractorProtocol: AnyObject {
     func removeFavoriteItem(withName id: String) throws
-    func getFavoriteList() -> [PokemonDisplayItem]
+    func getFavoriteList() async -> [PokemonDisplayItem]
 }
 
 // MARK: - Router

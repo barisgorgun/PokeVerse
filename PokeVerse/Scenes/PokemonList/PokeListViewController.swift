@@ -30,17 +30,15 @@ final class PokeListViewController: UIViewController {
 
         title = "pokeList_title".localized()
         setupTableView()
-        pokeListPresenter.load()
         EventCenter.observe(self, selector: #selector(handleFavoriteRemoved), for: .favoriteStatusChanged)
     }
 
-    init(pokeListPresenter: PokeListPresenterProtocol) {
-        self.pokeListPresenter = pokeListPresenter
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        Task {
+            await pokeListPresenter.load()
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -52,9 +50,22 @@ final class PokeListViewController: UIViewController {
         }
     }
 
+    init(pokeListPresenter: PokeListPresenterProtocol) {
+        self.pokeListPresenter = pokeListPresenter
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     @objc private func handleFavoriteRemoved(notification: Notification) {
-        guard let id = notification.userInfo?["id"] as? String else { return }
-        pokeListPresenter?.didReceiveFavoriteRemoval(for: id)
+        guard let id = notification.userInfo?["id"] as? String else {
+            return
+        }
+        Task {
+            await pokeListPresenter?.didReceiveFavoriteRemoval(for: id)
+        }
     }
 }
 
@@ -76,6 +87,32 @@ private extension PokeListViewController {
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
+    }
+}
+
+// MARK: - PokeListViewProtocol
+
+extension PokeListViewController: PokeListViewProtocol {
+
+    func updateFavoriteStatus(at indexPath: IndexPath, isFavorite: Bool) {
+        guard pokeList.indices.contains(indexPath.row) else {
+            return
+        }
+        pokeList[indexPath.row].isFavorite = isFavorite
+        tableView.reloadRows(at: [indexPath], with: .none)
+    }
+
+    func showPokeList(species: [PokemonDisplayItem]) {
+        self.pokeList = species
+        tableView.reloadData()
+    }
+
+    func showAlert(alert: Alert) {
+        show(alert: alert, style: .alert)
+    }
+
+    func showLoading(isLoading: Bool) {
+        navigationController?.view.setLoading(isLoading)
     }
 }
 
@@ -117,33 +154,9 @@ extension PokeListViewController: UITableViewDataSource, UITableViewDelegate {
 extension PokeListViewController: UITableViewDataSourcePrefetching {
 
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-        pokeListPresenter.prefetchIfNeeded(for: indexPaths)
-    }
-}
-
-// MARK: - PokeListViewProtocol
-
-extension PokeListViewController: PokeListViewProtocol {
-
-    func updateFavoriteStatus(at indexPath: IndexPath, isFavorite: Bool) {
-        guard pokeList.indices.contains(indexPath.row) else {
-            return
+        Task {
+            await  pokeListPresenter.prefetchIfNeeded(for: indexPaths)
         }
-        pokeList[indexPath.row].isFavorite = isFavorite
-        tableView.reloadRows(at: [indexPath], with: .none)
-    }
-    
-    func showPokeList(species: [PokemonDisplayItem]) {
-        self.pokeList = species
-        tableView.reloadData()
-    }
-    
-    func showAlert(alert: Alert) {
-        show(alert: alert, style: .alert)
-    }
-    
-    func showLoading(isLoading: Bool) {
-        self.navigationController?.view.setLoading(isLoading)
     }
 }
 
@@ -155,6 +168,8 @@ extension PokeListViewController: PokemonListCellDelegate {
         guard let indexPath = tableView.indexPath(for: cell) else {
             return
         }
-        pokeListPresenter.didTapFavorite(at: indexPath)
+        Task {
+            await pokeListPresenter.didTapFavorite(at: indexPath)
+        }
     }
 }

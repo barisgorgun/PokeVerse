@@ -58,7 +58,8 @@ final class PokeListInteractor: PokeListInteractorProtocol {
             try dataStore.saveFavorite(
                 id: pokemon.id,
                 name: pokemon.name,
-                url: pokemon.url
+                url: pokemon.url,
+                image: pokemon.image
             )
             return true
         }

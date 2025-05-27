@@ -14,10 +14,15 @@ final class PokeListPresenter: PokeListPresenterProtocol {
     weak var view: PokeListViewProtocol?
     private let interactor: PokeListInteractorProtocol
     private let router: PokeListRouterProtocol
-    private(set) var pokeList: [PokemonDisplayItem] = []
     private var isLoadingMore = false
     private var hasMorePages = true
 
+#if DEBUG
+    var pokeList: [PokemonDisplayItem] = []
+#else
+    private(set) var pokeList: [PokemonDisplayItem] = []
+#endif
+    
     init(
         view: PokeListViewProtocol?,
         interactor: PokeListInteractorProtocol,
@@ -28,21 +33,18 @@ final class PokeListPresenter: PokeListPresenterProtocol {
         self.router = router
     }
 
-    func load() {
-        Task {
-            await view?.showLoading(isLoading: true)
-            let result = await interactor.fetchData()
+    func load() async {
+        await view?.showLoading(isLoading: true)
+        let result = await interactor.fetchData()
+        await view?.showLoading(isLoading: false)
 
-            await view?.showLoading(isLoading: false)
-
-            switch result {
-            case .success(let pokeList):
-                self.pokeList = pokeList
-                await view?.showPokeList(species: pokeList)
-            case .failure(let error):
-                let alert = Alert(message: error.userMessage)
-                await view?.showAlert(alert: alert)
-            }
+        switch result {
+        case .success(let pokeList):
+            self.pokeList = pokeList
+            await view?.showPokeList(species: pokeList)
+        case .failure(let error):
+            let alert = Alert(message: error.userMessage)
+            await view?.showAlert(alert: alert)
         }
     }
 
@@ -55,7 +57,7 @@ final class PokeListPresenter: PokeListPresenterProtocol {
         router.navigate(to: .detail(poke))
     }
 
-    func prefetchIfNeeded(for indexPaths: [IndexPath]) {
+    func prefetchIfNeeded(for indexPaths: [IndexPath]) async {
         guard !isLoadingMore, hasMorePages else {
             return
         }
@@ -63,30 +65,26 @@ final class PokeListPresenter: PokeListPresenterProtocol {
 
         if indexPaths.contains(where: { $0.row >= threshold }) {
             isLoadingMore = true
-            loadMoreData()
+            await loadMoreData()
         }
     }
 
-    func didTapFavorite(at indexPath: IndexPath) {
-        Task {
-            guard pokeList.indices.contains(indexPath.row) else {
-                return
-            }
-            let pokemon = pokeList[indexPath.row]
-            do {
-                let isFavorite = try interactor.toggleFavorite(for: pokemon)
-                pokeList[indexPath.row].isFavorite = isFavorite
-                await view?.updateFavoriteStatus(at: indexPath, isFavorite: isFavorite)
-                EventCenter.post(.favoriteStatusChanged, userInfo: ["id": pokemon.id, "isFavorite": pokemon.isFavorite])
-            } catch let error as CoreDataError {
-                let alert = Alert(message: error.localizedDescription)
-                await view?.showAlert(alert: alert)
-            } catch {
-
-                // TODO: will be add loc.
-                let alert = Alert(message: "Beklenmeyen bir hata oluştu.")
-                await view?.showAlert(alert: alert)
-            }
+    func didTapFavorite(at indexPath: IndexPath) async {
+        guard pokeList.indices.contains(indexPath.row) else {
+            return
+        }
+        let pokemon = pokeList[indexPath.row]
+        do {
+            let isFavorite = try interactor.toggleFavorite(for: pokemon)
+            pokeList[indexPath.row].isFavorite = isFavorite
+            await view?.updateFavoriteStatus(at: indexPath, isFavorite: isFavorite)
+            EventCenter.post(.favoriteStatusChanged, userInfo: ["id": pokemon.id, "isFavorite": pokemon.isFavorite])
+        } catch let error as CoreDataError {
+            let alert = Alert(message: error.localizedDescription)
+            await view?.showAlert(alert: alert)
+        } catch {
+            let alert = Alert(message: "error_unexpected_message".localized())
+            await view?.showAlert(alert: alert)
         }
     }
 
@@ -94,33 +92,29 @@ final class PokeListPresenter: PokeListPresenterProtocol {
         interactor.isFavorite(id)
     }
 
-    private func loadMoreData() {
-        Task {
-            await view?.showLoading(isLoading: true)
-            let result = await interactor.fetchMoreData()
+    private func loadMoreData() async {
+        await view?.showLoading(isLoading: true)
+        let result = await interactor.fetchMoreData()
 
-            await view?.showLoading(isLoading: false)
-            isLoadingMore = false
-            hasMorePages = true
+        await view?.showLoading(isLoading: false)
+        isLoadingMore = false
+        hasMorePages = true
 
-            switch result {
-            case .success(let pokeList):
-                self.pokeList.append(contentsOf: pokeList)
-                await view?.showPokeList(species: self.pokeList)
-            case .failure(let error):
-                let alert = Alert(message: error.userMessage)
-                await view?.showAlert(alert: alert)
-            }
+        switch result {
+        case .success(let pokeList):
+            self.pokeList.append(contentsOf: pokeList)
+            await view?.showPokeList(species: self.pokeList)
+        case .failure(let error):
+            let alert = Alert(message: error.userMessage)
+            await view?.showAlert(alert: alert)
         }
     }
 
-    func didReceiveFavoriteRemoval(for id: String) {
+    func didReceiveFavoriteRemoval(for id: String) async {
         guard let index = pokeList.firstIndex(where: { $0.id == id }) else {
             return
         }
         pokeList[index].isFavorite = false
-        Task {
-            await view?.updateFavoriteStatus(at: IndexPath(row: index, section: 0), isFavorite: false)
-        }
+        await view?.updateFavoriteStatus(at: IndexPath(row: index, section: 0), isFavorite: false)
     }
 }

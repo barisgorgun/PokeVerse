@@ -15,18 +15,26 @@ final class FavoriteListInteractor: FavoriteListInteractorProtocol {
         self.dataStore = dataStore
     }
 
-    func getFavoriteList() -> [PokemonDisplayItem] {
-        var pokemonList: [PokemonDisplayItem] = []
-
+    func getFavoriteList() async -> [PokemonDisplayItem] {
         let result: [FavoritePokemon] = dataStore.getAllFavorites()
 
-        for item in result {
-            let image = ImageCacheManager.shared.getImage(for: item.id)
-            let displayItem = PokemonDisplayItem(from: item, image: image ?? UIImage())
-            pokemonList.append(displayItem)
-        }
+        return await createDisplayItems(from: result)
+    }
 
-        return pokemonList
+    func createDisplayItems(from speciesList: [FavoritePokemon]) async -> [PokemonDisplayItem] {
+        var items: [PokemonDisplayItem] = []
+
+        for species in speciesList {
+            let image = UIImage(data: species.image ?? Data())
+            items.append(PokemonDisplayItem(
+                id: species.id,
+                name: species.name,
+                url: species.url,
+                image: image ?? UIImage(),
+                isFavorite: true
+            ))
+        }
+        return items
     }
 
     func removeFavoriteItem(withName id: String) throws {

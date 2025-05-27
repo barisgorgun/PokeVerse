@@ -328,6 +328,60 @@
         }
       }
     },
+    "error_context_unavailable" : {
+      "comment" : "MARK: - CoreData Errors -",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unable to access the data source. Please restart the app."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Veri kaynağına ulaşılamıyor. Lütfen uygulamayı yeniden başlatın."
+          }
+        }
+      }
+    },
+    "error_duplicate_favorite" : {
+      "comment" : "MARK: - CoreData Errors -",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This Pokémon is already in your favorites."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bu Pokémon zaten favorilerde."
+          }
+        }
+      }
+    },
+    "error_fetch_failed" : {
+      "comment" : "MARK: - CoreData Errors -",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to load your favorite list. Please try again."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Favori listesi yüklenemedi. Lütfen tekrar deneyin."
+          }
+        }
+      }
+    },
     "error_fileNotFound_description" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -362,6 +416,24 @@
         }
       }
     },
+    "error_invalid_data" : {
+      "comment" : "MARK: - CoreData Errors -",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An unexpected data error occurred."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Beklenmeyen bir veri hatası oluştu."
+          }
+        }
+      }
+    },
     "error_invalidURL_description" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -379,19 +451,38 @@
         }
       }
     },
-    "error_invalidURL_message" : {
+    "error_item_not_found" : {
+      "comment" : "MARK: - CoreData Errors -",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "An unexpected error occurred."
+            "value" : "This Pokémon could not be found in your favorites."
           }
         },
         "tr" : {
           "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bu Pokémon favorilerde bulunamadı."
+          }
+        }
+      }
+    },
+    "error_save_failed" : {
+      "comment" : "MARK: - CoreData Errors -",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
             "state" : "translated",
-            "value" : "Beklenmeyen bir hata oluştu."
+            "value" : "Something went wrong while adding to favorites. Please try again."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Favorilere eklenirken bir sorun oluştu. Lütfen tekrar deneyin."
           }
         }
       }
@@ -430,6 +521,41 @@
         }
       }
     },
+    "error_unexpected_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An unexpected error occurred."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beklenmeyen bir hata oluştu."
+          }
+        }
+      }
+    },
+    "error_unknown" : {
+      "comment" : "MARK: - CoreData Errors -",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An unknown error occurred. Please try again"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Bilinmeyen bir hata oluştu. Lütfen tekrar deneyin."
+          }
+        }
+      }
+    },
     "error_unknownStatusCode_description" : {
       "comment" : "MARK: - Error Descriptions -",
       "extractionState" : "manual",
@@ -462,6 +588,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bir hata oluştu. Lütfen tekrar deneyin."
+          }
+        }
+      }
+    },
+    "favorite_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorites"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Favoriler"
           }
         }
       }

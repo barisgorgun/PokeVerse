@@ -7,10 +7,11 @@
 
 import Foundation
 import CoreData
+import UIKit
 
 
 protocol FavoritePokemonDataStoreProtocol {
-    func saveFavorite(id: String, name: String, url: String) throws
+    func saveFavorite(id: String, name: String, url: String, image: UIImage) throws
     func removeFavorite(with id: String) throws
     func isFavorite(id: String) -> Bool
     func getAllFavorites() -> [FavoritePokemon]
@@ -30,7 +31,12 @@ final class FavoritePokemonDataStore: FavoritePokemonDataStoreProtocol {
 
     // MARK: - Public Methods
 
-    func saveFavorite(id: String, name: String, url: String) throws {
+    func saveFavorite(
+        id: String,
+        name: String,
+        url: String,
+        image: UIImage
+    ) throws {
         if  isFavorite(id: id) {
             throw CoreDataError.duplicateEntry
         }
@@ -39,10 +45,15 @@ final class FavoritePokemonDataStore: FavoritePokemonDataStoreProtocol {
             throw CoreDataError.invalidData
         }
 
+        guard let imageData = image.pngData() else {
+            throw CoreDataError.invalidData
+        }
+
         let favorite = FavoritePokemon(context: context)
         favorite.id = id
         favorite.name = name
         favorite.url = url
+        favorite.image = imageData
 
         do {
             try context.save()

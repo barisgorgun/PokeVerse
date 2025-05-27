@@ -41,7 +41,7 @@ class FavoriteListViewController: UIViewController {
 
         EventCenter.observe(self, selector: #selector(handleFavoriteChange), for: .favoriteStatusChanged)
         
-        title = "Favoriler"
+        title = "favorite_title".localized()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -96,7 +96,11 @@ extension FavoriteListViewController: UITableViewDataSource, UITableViewDelegate
 // MARK: - FavoriteListViewProtocol
 
 extension FavoriteListViewController: FavoriteListViewProtocol {
-    
+
+    func showLoading(isLoading: Bool) {
+        navigationController?.view.setLoading(isLoading)
+    }
+
     func showAlert(alert: Alert) {
         show(alert: alert, style: .alert)
     }

@@ -13,7 +13,7 @@ final class PokeListInteractorTests: XCTestCase {
 
     private var interactor: PokeListInteractor!
     private var mockNetworkManager: MockNetworkManager!
-
+    private var mockDataStore: MockFavoritePokemonDataStore!
 
     override func setUp() {
         super.setUp()
@@ -35,8 +35,10 @@ final class PokeListInteractorTests: XCTestCase {
 
         // Then
         switch result {
-        case .success(let species):
-            XCTAssertEqual(species, expectedList)
+        case .success(let displayItems):
+            XCTAssertEqual(displayItems.count, expectedList.count)
+            XCTAssertEqual(displayItems[0].name, expectedList[0].name)
+            XCTAssertEqual(displayItems[0].url, expectedList[0].url)
         case .failure:
             XCTFail("Expected success but got failure")
         }
@@ -55,7 +57,6 @@ final class PokeListInteractorTests: XCTestCase {
             XCTFail("Expected failure but got success")
         case .failure(let error):
             XCTAssertNotNil(error)
-            XCTAssertTrue(error is NetworkError)
         }
     }
 
@@ -68,12 +69,14 @@ final class PokeListInteractorTests: XCTestCase {
         let secondPageList = secondExpectedResponse.results
 
         // When
-       let result = await interactor.fetchMoreData()
+        let result = await interactor.fetchMoreData()
 
         // Then
         switch result {
-        case .success(let species):
-            XCTAssertEqual(species, secondPageList)
+        case .success(let displayItems):
+            XCTAssertEqual(displayItems.count, secondPageList.count)
+            XCTAssertEqual(displayItems[0].name, secondPageList[0].name)
+            XCTAssertEqual(displayItems[0].url, secondPageList[0].url)
         case .failure:
             XCTFail("Expected success but got failure")
         }
@@ -96,7 +99,6 @@ final class PokeListInteractorTests: XCTestCase {
             XCTFail("Expected failure but got success")
         case .failure(let error):
             XCTAssertNotNil(error)
-            XCTAssertTrue(error is NetworkError)
         }
     }
 
@@ -109,19 +111,63 @@ final class PokeListInteractorTests: XCTestCase {
         case .success:
             XCTFail("Expected failure but got success")
         case .failure(let error):
-            guard let networkError = error as? NetworkError else {
-                return XCTFail("Expected NetworkError but got different error")
-            }
-            XCTAssertEqual(networkError, .contentEmptyData)
+            XCTAssertEqual(error, .contentEmptyData)
         }
     }
+
+    func test_toggleFavorite_addsPokemonToFavorites() throws {
+        // Given
+        let pokemon = PokemonDisplayItem.mock(id: "123", isFavorite: false)
+
+        // When
+        let result = try interactor.toggleFavorite(for: pokemon)
+
+        // Then
+        XCTAssertTrue(result, "Pokemon favorilere eklenmeli.")
+        XCTAssertTrue(mockDataStore.isFavorite(id: "123"))
+    }
+
+    func test_toggleFavorite_removesPokemonFromFavorites() throws {
+        // Given
+        let pokemon = PokemonDisplayItem.mock(id: "123", isFavorite: true)
+        try mockDataStore.saveFavorite(id: pokemon.id, name: pokemon.name, url: pokemon.url, image: pokemon.image)
+
+        // When
+        let result = try interactor.toggleFavorite(for: pokemon)
+
+        // Then
+        XCTAssertFalse(result, "Pokemon favorilerden kaldırılmalı.")
+        XCTAssertFalse(mockDataStore.isFavorite(id: "123"))
+    }
+
+    func test_isFavorite_returnsTrue_whenPokemonIsInFavorites() {
+        // Given
+        mockDataStore.addToFavorites(id: "001")
+
+        // When
+        let result = interactor.isFavorite("001")
+
+        // Then
+        XCTAssertTrue(result)
+    }
+
+    func test_isFavorite_returnsFalse_whenPokemonIsNotInFavorites() {
+        // When
+        let result = interactor.isFavorite("999")
+
+        // Then
+        XCTAssertFalse(result)
+    }
+
+
 
     // MARK: - Helper Methods
 
     private func setupTestEnvironment(with mockFile: String) {
         mockNetworkManager = MockNetworkManager()
+        mockDataStore = MockFavoritePokemonDataStore()
         let service = PokemonListService(networkManager: mockNetworkManager)
-        interactor = PokeListInteractor(pokeService: service)
+        interactor = PokeListInteractor(pokeService: service, dataStore: mockDataStore)
     }
 
     private func resetTestEnvironment(with mockFile: String) {
@@ -131,6 +177,7 @@ final class PokeListInteractorTests: XCTestCase {
     private func cleanUpTestEnvironment() {
         interactor = nil
         mockNetworkManager = nil
+        mockDataStore = nil
     }
 }
 
