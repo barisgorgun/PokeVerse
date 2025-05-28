@@ -10,7 +10,7 @@ import XCTest
 @testable import PokeVerse
 
 final class FavoriteListInteractorTests: XCTestCase {
-    private var interactor: FavoriteListInteractorProtocol!
+    private var interactor: FavoriteListInteractor!
     private var dataStore: MockFavoritePokemonDataStore!
 
     override func setUp() {
@@ -20,10 +20,20 @@ final class FavoriteListInteractorTests: XCTestCase {
     }
 
     override func tearDown() {
-        super.tearDown()
         dataStore = nil
         interactor = nil
+        super.tearDown()
     }
 
+    func test_removeFavoriteItem_shouldRemovePokemonFromFavorites() throws {
+        // Given
+        let pokemon = PokemonDisplayItem.mock(id: "123", isFavorite: true)
+        try dataStore.saveFavorite(id: pokemon.id, name: pokemon.name, url: pokemon.url, image: pokemon.image)
 
+        // When
+        try interactor.removeFavoriteItem(withName: pokemon.id)
+
+        // Then
+        XCTAssertFalse(dataStore.isFavorite(id: "123"))
+    }
 }

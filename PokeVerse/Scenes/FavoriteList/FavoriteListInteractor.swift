@@ -21,7 +21,7 @@ final class FavoriteListInteractor: FavoriteListInteractorProtocol {
         return await createDisplayItems(from: result)
     }
 
-    func createDisplayItems(from speciesList: [FavoritePokemon]) async -> [PokemonDisplayItem] {
+   private func createDisplayItems(from speciesList: [FavoritePokemon]) async -> [PokemonDisplayItem] {
         var items: [PokemonDisplayItem] = []
 
         for species in speciesList {
