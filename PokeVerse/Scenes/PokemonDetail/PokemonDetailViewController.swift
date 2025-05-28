@@ -137,7 +137,9 @@ final class PokemonDetailViewController: UIViewController {
         view.backgroundColor = .systemBackground
         setupViews()
         setupConstraints()
-        pokeDetailPresenter.loadData()
+        Task {
+            await pokeDetailPresenter.loadData()
+        }
         view.layer.insertSublayer(gradientLayer, at: .zero)
     }
 

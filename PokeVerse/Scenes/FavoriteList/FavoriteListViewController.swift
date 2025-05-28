@@ -42,11 +42,10 @@ class FavoriteListViewController: UIViewController {
         EventCenter.observe(self, selector: #selector(handleFavoriteChange), for: .favoriteStatusChanged)
         
         title = "favorite_title".localized()
-    }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        favoriteListPresenter.load()
+        Task {
+            await favoriteListPresenter.load()
+        }
     }
 
     init(favoriteListPresenter: FavoriteListPresenterProtocol) {
@@ -63,7 +62,9 @@ class FavoriteListViewController: UIViewController {
     }
 
     @objc private func handleFavoriteChange(notification: Notification) {
-        favoriteListPresenter.didReceiveFavoriteChange()
+        Task {
+            await favoriteListPresenter.didReceiveFavoriteChange()
+        }
     }
 }
 
@@ -119,6 +120,9 @@ extension FavoriteListViewController: PokemonListCellDelegate {
         guard let indexPath = favoriteListTableView.indexPath(for: cell) else {
             return
         }
-        favoriteListPresenter.didTapFavorite(at: indexPath)
+
+        Task {
+            await favoriteListPresenter.didTapFavorite(at: indexPath)
+        }
     }
 }

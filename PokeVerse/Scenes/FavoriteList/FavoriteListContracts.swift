@@ -21,10 +21,10 @@ protocol FavoriteListViewProtocol: AnyObject {
 protocol FavoriteListPresenterProtocol: AnyObject {
     var view: FavoriteListViewProtocol? { get set }
 
-    func load()
+    func load() async
     func didSelectPoke(at index: Int)
-    func didTapFavorite(at indexPath: IndexPath)
-    func didReceiveFavoriteChange()
+    func didTapFavorite(at indexPath: IndexPath) async
+    func didReceiveFavoriteChange() async
 }
 
 // MARK: - Interactor

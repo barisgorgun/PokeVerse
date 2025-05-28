@@ -26,6 +26,6 @@ protocol PokemonDetailInteractorProtocol: AnyObject {
 // MARK: Presenter
 
 protocol PokemonDetailPresenterProtocol: AnyObject {
-    func loadData()
+    func loadData() async
     func selectedControllerTapped(at index: Int)
 }

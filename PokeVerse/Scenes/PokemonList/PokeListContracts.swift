@@ -41,7 +41,7 @@ protocol PokeListPresenterProtocol: AnyObject {
 
 // MARK: - Router
 
-enum PokeListRoute {
+enum PokeListRoute: Equatable {
     case detail(String)
 }
 

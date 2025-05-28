@@ -10,14 +10,14 @@ import XCTest
 @testable import PokeVerse
 
 final class PokeListInteractorTests: XCTestCase {
-
     private var interactor: PokeListInteractor!
     private var mockNetworkManager: MockNetworkManager!
     private var mockDataStore: MockFavoritePokemonDataStore!
+    private var service: PokemonListServiceProtocol!
 
     override func setUp() {
         super.setUp()
-        setupTestEnvironment(with: "species")
+        setupTestEnvironment()
     }
 
     override func tearDown() {
@@ -29,6 +29,7 @@ final class PokeListInteractorTests: XCTestCase {
         // Given
         let expectedResponse: PokeSpecies = try mockNetworkManager.loadExpectedData(from: "species")
         let expectedList = expectedResponse.results
+        mockNetworkManager.mockFileSequence = ["species"]
 
         // When
         let result = await interactor.fetchData()
@@ -62,12 +63,12 @@ final class PokeListInteractorTests: XCTestCase {
 
     func test_fetchMoreData_success() async throws {
         // Given
+        mockNetworkManager.mockFileSequence = ["species", "speciesMore"]
         _ = await interactor.fetchData()
 
-        resetTestEnvironment(with: "speciesMore")
         let secondExpectedResponse: PokeSpecies = try mockNetworkManager.loadExpectedData(from: "speciesMore")
         let secondPageList = secondExpectedResponse.results
-
+        
         // When
         let result = await interactor.fetchMoreData()
 
@@ -87,7 +88,7 @@ final class PokeListInteractorTests: XCTestCase {
        _ = await interactor.fetchData()
         mockNetworkManager.shouldSucceed = false
 
-        resetTestEnvironment(with: "speciesMore")
+        mockNetworkManager.mockFileSequence = ["speciesMore"]
 
         // When
        let result = await interactor.fetchMoreData()
@@ -163,29 +164,18 @@ final class PokeListInteractorTests: XCTestCase {
 
     // MARK: - Helper Methods
 
-    private func setupTestEnvironment(with mockFile: String) {
+    private func setupTestEnvironment() {
         mockNetworkManager = MockNetworkManager()
+        mockNetworkManager.currentRequestIndex = 0
         mockDataStore = MockFavoritePokemonDataStore()
-        let service = PokemonListService(networkManager: mockNetworkManager)
+        service = PokemonListService(networkManager: mockNetworkManager)
         interactor = PokeListInteractor(pokeService: service, dataStore: mockDataStore)
-    }
-
-    private func resetTestEnvironment(with mockFile: String) {
-        mockNetworkManager.updateMockFile(mockFile)
     }
 
     private func cleanUpTestEnvironment() {
         interactor = nil
         mockNetworkManager = nil
         mockDataStore = nil
-    }
-}
-
-// MARK: - MockNetworkManager
-
-extension MockNetworkManager {
-
-    func updateMockFile(_ fileName: String) {
-        self.mockFileName = fileName
+        service = nil
     }
 }

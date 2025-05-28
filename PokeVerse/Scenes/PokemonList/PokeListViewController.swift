@@ -31,11 +31,6 @@ final class PokeListViewController: UIViewController {
         title = "pokeList_title".localized()
         setupTableView()
         EventCenter.observe(self, selector: #selector(handleFavoriteRemoved), for: .favoriteStatusChanged)
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
         Task {
             await pokeListPresenter.load()
         }

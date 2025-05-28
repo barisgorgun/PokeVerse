@@ -25,20 +25,18 @@ final class PokemonDetailPresenter: PokemonDetailPresenterProtocol {
         self.interactor = interactor
     }
 
-    func loadData() {
-        Task {
-            await view?.showLoading(isLoading: true)
-            let result = await interactor.fetchData()
+    func loadData() async {
+        await view?.showLoading(isLoading: true)
+        let result = await interactor.fetchData()
 
-            await view?.showLoading(isLoading: false)
+        await view?.showLoading(isLoading: false)
 
-            switch result {
-            case .success(let pokemon):
-                await view?.showData(pokemon: pokemon)
-            case .failure(let error):
-                let alert = Alert(message: error.userMessage)
-                await view?.showAlert(alert: alert)
-            }
+        switch result {
+        case .success(let pokemon):
+            await view?.showData(pokemon: pokemon)
+        case .failure(let error):
+            let alert = Alert(message: error.userMessage)
+            await view?.showAlert(alert: alert)
         }
     }
 

@@ -6,19 +6,19 @@
 //
 
 import XCTest
-/*
+
 @testable import PokeVerse
 
+@MainActor
 final class PokemonDetailPresenterTests: XCTestCase {
 
     private var presenter: PokemonDetailPresenter!
     private var view: MockDetailView!
     private var interactor: MockDetailInteractor!
 
-    override func setUp() {
-        super.setUp()
-
-        view = MockDetailView()
+    override func setUp() async throws {
+        try await super.setUp()
+        view = await MainActor.run { MockDetailView() }
         interactor = MockDetailInteractor()
         presenter = PokemonDetailPresenter(view: view, interactor: interactor)
     }
@@ -26,132 +26,127 @@ final class PokemonDetailPresenterTests: XCTestCase {
     override func tearDown() {
         view = nil
         interactor = nil
-
+        presenter = nil
         super.tearDown()
     }
 
-    func test_loadData_triggersFetch_andUpdatesViewOnSuccess() {
+    func test_loadData_success_shouldShowPokemonAndStopLoading() async {
         // Given
-        XCTAssertFalse(interactor.fetchDataCalled)
-        let expectation = XCTestExpectation(description: "loadData called")
+        let mockPokemon = Pokemon.mock()
+        interactor.resultToReturn = .success(mockPokemon)
 
-        interactor.onFetchDataCalled = {
+        // When
+        await presenter.loadData()
+
+        // Then
+        XCTAssertEqual(view.loadingStates, [true, false])
+        XCTAssertEqual(view.shownPokemon?.speciesDetail.name, mockPokemon.speciesDetail.name)
+    }
+
+    func test_loadData_failure_shouldShowAlert() async {
+        // Given
+        interactor.resultToReturn = .failure(.contentEmptyData)
+
+        // When
+        await presenter.loadData()
+
+        // Then
+        XCTAssertEqual(view.loadingStates, [true, false])
+        XCTAssertEqual(view.shownAlert?.message, NetworkError.contentEmptyData.userMessage)
+    }
+
+    func test_selectedControllerTapped_about_shouldShowAboutView() async {
+        // Given
+        let expectation = expectation(description: "showInfoView .about")
+        view.onShowInfoView = { viewType in
+            XCTAssertEqual(viewType, .about)
             expectation.fulfill()
         }
 
         // When
-        presenter.loadData()
+        presenter.selectedControllerTapped(at: 0)
+        await fulfillment(of: [expectation], timeout: 1.0)
 
         // Then
-        wait(for: [expectation], timeout: 1.0)
-        XCTAssertTrue(interactor.fetchDataCalled)
+        XCTAssertEqual(view.shownInfoView, .about)
     }
 
-    func test_loadData_showsAlertOnFailure() {
+    func test_selectedControllerTapped_withValidIndex_shouldShowCorrectViewType() async {
         // Given
-        let error = NetworkError.contentEmptyData
-        let expectedMessage = error.localizedDescription
+        let expectation = expectation(description: "Info view should be updated")
 
-        // When
-        presenter.handleOutput(.showAlert(error))
-
-        // Then
-        XCTAssertEqual(view.outputs.count, 1)
-        if case let .showAlert(alert) = view.outputs.first {
-            XCTAssertEqual(alert.message, expectedMessage)
-        } else {
-            XCTFail("Expected .showAlert output")
+        view.onShowInfoView = { _ in
+            expectation.fulfill()
         }
-    }
 
-    func test_selectedControllerTapped_withIndex0_showsAboutView() {
-        // When
-        presenter.selectedControllerTapped(at: .zero)
-
-        // Then
-        if case let .showInfoView(receivedType) = view.outputs.first {
-            XCTAssertEqual(receivedType, .about)
-        }
-    }
-
-    func test_selectedControllerTapped_withIndex1_showsAboutView() {
         // When
         presenter.selectedControllerTapped(at: 1)
 
         // Then
-        if case let .showInfoView(receivedType) = view.outputs.first {
-            XCTAssertEqual(receivedType, .stats)
-        }
+        await fulfillment(of: [expectation], timeout: 1.0)
+        XCTAssertEqual(view.shownInfoView, .stats)
     }
 
-    func test_selectedControllerTapped_withIndex2_showsAboutView() {
+    func test_selectedControllerTapped_evolution_shouldShowEvolutionView() async {
+        // Given
+        let expectation = expectation(description: "showInfoView .evolution")
+        view.onShowInfoView = { viewType in
+            XCTAssertEqual(viewType, .evolution)
+            expectation.fulfill()
+        }
+
         // When
         presenter.selectedControllerTapped(at: 2)
 
         // Then
-        if case let .showInfoView(receivedType) = view.outputs.first {
-            XCTAssertEqual(receivedType, .evolution)
-        }
+        await fulfillment(of: [expectation], timeout: 1.0)
+        XCTAssertEqual(view.shownInfoView, .evolution)
     }
 
-    func test_selectedControllerTapped_withInvalidIndex_doesNotCrash() {
+    func test_selectedControllerTapped_invalidIndex_shouldDoNothing() {
         // When
-        presenter.selectedControllerTapped(at: 3)
+        presenter.selectedControllerTapped(at: 999)
 
         // Then
-        XCTAssertTrue(view.outputs.isEmpty, "Unexpected output sent for invalid index \(3)")
-    }
-
-    func test_selectedControllerTapped_withMaxInt_handlesGracefully() {
-        // When
-        presenter.selectedControllerTapped(at: Int.max)
-
-        // Then
-        XCTAssertTrue(view.outputs.isEmpty, "No output should be sent for invalid index")
-        XCTAssertFalse(interactor.fetchDataCalled, "Interactor should not be triggered")
-
-    }
-
-    func test_handleOutput_showAlert_convertsErrorToUserMessage() {
-        let testError = NetworkError.contentEmptyData
-        let expectedMessage = testError.localizedDescription
-
-        // When
-        presenter.handleOutput(.showAlert(testError))
-
-        // Then
-        XCTAssertEqual(view.outputs.count, 1, "Exactly 1 output should be sent")
-
-        if case let .showAlert(alert) = view.outputs.first {
-            XCTAssertEqual(alert.message, expectedMessage, "Error message should be propagated correctly")
-            XCTAssertEqual(alert.actions.count, 1, "Default action should be added")
-            XCTAssertEqual(alert.actions.first?.title, "action_1".localized(), "Default action title should be correct")
-        } else {
-            XCTFail("Expected showAlert output type")
-        }
+        XCTAssertNil(view.shownInfoView)
     }
 }
 
 // MARK: - PokemonDetailViewProtocol
 
 private final class MockDetailView: PokemonDetailViewProtocol {
-    var outputs: [PokemonDetailPresenterOutput] = []
+    private(set) var loadingStates: [Bool] = []
+    private(set) var shownPokemon: Pokemon?
+    private(set) var shownAlert: Alert?
+    private(set) var shownInfoView: DetailViewType?
+    var onShowInfoView: ((DetailViewType) -> Void)?
 
-    func handleOutput(_ output: PokemonDetailPresenterOutput) {
-        outputs.append(output)
+    func showData(pokemon: Pokemon) {
+        shownPokemon = pokemon
+    }
+
+    func showAlert(alert: Alert) {
+        shownAlert = alert
+    }
+
+    func showLoading(isLoading: Bool) {
+        loadingStates.append(isLoading)
+    }
+
+    func showInfoView(view: DetailViewType) {
+        shownInfoView = view
+        onShowInfoView?(view)
     }
 }
 
 // MARK: - PokemonDetailInteractorProtocol
 
 private final class MockDetailInteractor: PokemonDetailInteractorProtocol {
-    var delegate: (any PokemonDetailInteractorDelegate)?
-    var fetchDataCalled = false
-    var onFetchDataCalled: (() -> Void)?
+    var resultToReturn: Result<Pokemon, NetworkError> = .failure(.contentEmptyData)
+    private(set) var fetchDataCalled = false
 
-    func fetchData() async {
+    func fetchData() async -> Result<Pokemon, NetworkError> {
         fetchDataCalled = true
-        onFetchDataCalled?()
+        return resultToReturn
     }
 }
-*/
