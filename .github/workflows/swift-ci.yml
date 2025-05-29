@@ -16,17 +16,9 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-        path: 'PokeVerse'
-
-    - name: Clean Git Index
-      run: |
-        cd PokeVerse
-        git fsck
-        git reset --hard HEAD
 
     - name: Convert Project to XML
       run: |
-        cd PokeVerse
         plutil -convert xml1 PokeVerse.xcodeproj/project.pbxproj
 
     - name: Select Xcode 15.2
@@ -36,13 +28,11 @@ jobs:
 
     - name: Debug Directory Structure
       run: |
-        cd PokeVerse
         ls -la
         xcodebuild -list -project PokeVerse.xcodeproj
 
     - name: Build
       run: |
-        cd PokeVerse
         xcodebuild \
           -project PokeVerse.xcodeproj \
           -scheme "PokeVerse" \
@@ -51,9 +41,9 @@ jobs:
 
     - name: Run Tests
       run: |
-        cd PokeVerse
         xcodebuild \
           -project PokeVerse.xcodeproj \
           -scheme "PokeVerse" \
           -destination "platform=iOS Simulator,OS=latest" \
           test
+
