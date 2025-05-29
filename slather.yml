@@ -1,6 +1,7 @@
 coverage_service: html
 scheme: PokeVerse
 workspace: PokeVerse.xcworkspace
+xcodeproj: PokeVerse.xcodeproj
 output_directory: slather-report
 source_directory: .
 ignore:
