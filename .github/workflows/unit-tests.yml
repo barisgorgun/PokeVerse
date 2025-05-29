@@ -16,23 +16,22 @@ jobs:
       - name: Set Xcode version
         run: sudo xcode-select -s /Applications/Xcode_15.0.app
 
-      - name: Build for testing
+      - name: Run tests with coverage enabled
         run: |
-          xcodebuild build-for-testing \
-          -scheme PokeVerse \
-          -destination 'platform=iOS Simulator,name=iPhone 14' \
-          -enableCodeCoverage YES | xcpretty
-
-      - name: Run tests with coverage
-        run: |
-          xcodebuild test-without-building \
-          -scheme PokeVerse \
-          -destination 'platform=iOS Simulator,name=iPhone 14' \
-          -enableCodeCoverage YES | xcpretty
+          xcodebuild \
+            -workspace PokeVerse.xcworkspace \
+            -scheme PokeVerse \
+            -destination 'platform=iOS Simulator,name=iPhone 14' \
+            -enableCodeCoverage YES \
+            clean build test | xcpretty
 
       - name: Install Slather
         run: sudo gem install slather
 
       - name: Run Slather to generate coverage report
         run: |
-          slather coverage --scheme PokeVerse --workspace PokeVerse.xcworkspace PokeVerse.xcodeproj
+          slather coverage \
+            --scheme PokeVerse \
+            --workspace PokeVerse.xcworkspace \
+            --build-directory build \
+            PokeVerse.xcodeproj

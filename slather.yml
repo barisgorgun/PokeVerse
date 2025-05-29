@@ -1,0 +1,6 @@
+xcodeproj: ./PokeVerse.xcodeproj
+scheme: PokeVerse
+workspace: PokeVerse.xcworkspace
+build_directory: build
+output_directory: slather-report
+coverage_service: html
