@@ -6,10 +6,6 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		A88DD4612DDC97AC00CE5033 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = A88DD4602DDC97AC00CE5033 /* Lottie */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXContainerItemProxy section */
 		A829F9AA2DC4E5DB0078FD4B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -69,7 +65,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A88DD4612DDC97AC00CE5033 /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -130,7 +125,6 @@
 			);
 			name = PokeVerse;
 			packageProductDependencies = (
-				A88DD4602DDC97AC00CE5033 /* Lottie */,
 			);
 			productName = PokeVerse;
 			productReference = A829F9932DC4E5D90078FD4B /* PokeVerse.app */;
@@ -216,7 +210,6 @@
 			mainGroup = A829F98A2DC4E5D90078FD4B;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				A88DD45F2DDC97AC00CE5033 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A829F9942DC4E5D90078FD4B /* Products */;
@@ -575,25 +568,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		A88DD45F2DDC97AC00CE5033 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.5.1;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		A88DD4602DDC97AC00CE5033 /* Lottie */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A88DD45F2DDC97AC00CE5033 /* XCRemoteSwiftPackageReference "lottie-ios" */;
-			productName = Lottie;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A829F98B2DC4E5D90078FD4B /* Project object */;
 }

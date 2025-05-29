@@ -6,31 +6,40 @@
 //
 
 import UIKit
+import SwiftUI
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard let windowScene = (scene as? UIWindowScene) else {
+        guard let windowScene = scene as? UIWindowScene else {
             return
         }
 
-        window = UIWindow(windowScene: windowScene)
+           let window = UIWindow(windowScene: windowScene)
 
-        let splashVC = SplashViewController()
+           let splashView = SplashView {
+               self.showMainApp(in: window)
+           }
+           let hostingController = UIHostingController(rootView: splashView)
+           window.rootViewController = hostingController
+           self.window = window
+           window.makeKeyAndVisible()
+    }
 
-        splashVC.onAnimationFinished = { [weak self] in
-            guard let self else {
-                return
-            }
+    private func showMainApp(in window: UIWindow) {
+        let mainVC = MainTabBarController()
 
-            let tabBarController = MainTabBarController()
-            self.window?.rootViewController = tabBarController
-        }
-
-        window?.rootViewController = splashVC
-        window?.makeKeyAndVisible()
+        UIView.transition(
+            with: window,
+            duration: 0.6,
+            options: .transitionCrossDissolve,
+            animations: {
+                window.rootViewController = mainVC
+            },
+            completion: nil
+        )
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
