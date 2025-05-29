@@ -1,0 +1,9 @@
+coverage_service: html
+scheme: PokeVerse
+workspace: PokeVerse.xcworkspace
+output_directory: slather-report
+source_directory: .
+ignore:
+  - SourcePackages
+  - Pods
+  - PokeVerseTests
