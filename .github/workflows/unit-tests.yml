@@ -35,4 +35,4 @@ jobs:
 
       - name: Run Slather to generate coverage report
         run: |
-          slather
+          slather coverage --scheme PokeVerse --workspace PokeVerse.xcworkspace PokeVerse.xcodeproj
