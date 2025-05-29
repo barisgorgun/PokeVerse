@@ -20,17 +20,12 @@ jobs:
     - name: Select Xcode 15.2
       run: |
         sudo xcode-select -s /Applications/Xcode_15.2.app
-        xcodebuild -version  # Xcode versiyonunu log'la
+        xcodebuild -version
 
     - name: Debug Directory Structure
       run: |
         cd PokeVerse
-        ls -la  # Dizin yapısını göster
-
-    - name: List Schemes (Debug)
-      run: |
-        cd PokeVerse
-        xcodebuild -list -project PokeVerse.xcodeproj
+        ls -la
 
     - name: Build
       run: |
@@ -39,7 +34,7 @@ jobs:
           -project PokeVerse.xcodeproj \
           -scheme "PokeVerse" \
           -destination "platform=iOS Simulator,name=iPhone 15" \
-          clean build | xcpretty
+          clean build
 
     - name: Run Unit Tests
       run: |
@@ -48,13 +43,4 @@ jobs:
           -project PokeVerse.xcodeproj \
           -scheme "PokeVerse" \
           -destination "platform=iOS Simulator,name=iPhone 15" \
-          test | xcpretty
-
-    - name: Upload Test Results (Optional)
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: xcode-test-results
-        path: |
-          PokeVerse/build/reports/tests/*
-          PokeVerse/TestResults/*.xcresult
+          test
