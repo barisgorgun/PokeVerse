@@ -14,12 +14,6 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Convert Project to XML
-      run: |
-        plutil -convert xml1 PokeVerse.xcodeproj/project.pbxproj
 
     - name: Select Xcode 15.2
       run: |
@@ -46,4 +40,3 @@ jobs:
           -scheme "PokeVerse" \
           -destination "platform=iOS Simulator,OS=latest" \
           test
-
