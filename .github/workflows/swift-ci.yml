@@ -9,18 +9,52 @@ on:
 jobs:
   build-and-test:
     runs-on: macos-latest
+    timeout-minutes: 30
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        path: 'PokeVerse'
 
-    - name: Select Latest Xcode
-      run: sudo xcode-select -s /Applications/Xcode_15.2.app
+    - name: Select Xcode 15.2
+      run: |
+        sudo xcode-select -s /Applications/Xcode_15.2.app
+        xcodebuild -version  # Xcode versiyonunu log'la
 
-    - name: Show Xcode Version
-      run: xcodebuild -version
+    - name: Debug Directory Structure
+      run: |
+        cd PokeVerse
+        ls -la  # Dizin yapısını göster
 
-    - name: Build Project
-      run: xcodebuild build -project PokeVerse.xcodeproj -scheme PokeVerse -destination "platform=iOS Simulator,name=iPhone 15"
+    - name: List Schemes (Debug)
+      run: |
+        cd PokeVerse
+        xcodebuild -list -project PokeVerse.xcodeproj
+
+    - name: Build
+      run: |
+        cd PokeVerse
+        xcodebuild \
+          -project PokeVerse.xcodeproj \
+          -scheme "PokeVerse" \
+          -destination "platform=iOS Simulator,name=iPhone 15" \
+          clean build | xcpretty
 
     - name: Run Unit Tests
-      run: xcodebuild test -project PokeVerse.xcodeproj -scheme PokeVerse -destination "platform=iOS Simulator,name=iPhone 15" 
+      run: |
+        cd PokeVerse
+        xcodebuild \
+          -project PokeVerse.xcodeproj \
+          -scheme "PokeVerse" \
+          -destination "platform=iOS Simulator,name=iPhone 15" \
+          test | xcpretty
+
+    - name: Upload Test Results (Optional)
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: xcode-test-results
+        path: |
+          PokeVerse/build/reports/tests/*
+          PokeVerse/TestResults/*.xcresult
