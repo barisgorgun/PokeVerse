@@ -21,19 +21,19 @@ jobs:
           xcodebuild build-for-testing \
           -scheme PokeVerse \
           -destination 'platform=iOS Simulator,name=iPhone 14' \
-          -enableCodeCoverage YES | xcpretty
+          -enableCodeCoverage YES \
+          -resultBundlePath TestResults | xcpretty
 
       - name: Run tests with coverage
         run: |
           xcodebuild test-without-building \
           -scheme PokeVerse \
           -destination 'platform=iOS Simulator,name=iPhone 14' \
-          -enableCodeCoverage YES | xcpretty
+          -enableCodeCoverage YES \
+          -resultBundlePath TestResults | xcpretty
 
       - name: Upload to Codecov
         uses: codecov/codecov-action@v3
         with:
-          flags: unittests
-          name: ios-tests
+          files: TestResults.xcresult
           fail_ci_if_error: true
-
