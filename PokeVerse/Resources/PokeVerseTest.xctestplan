@@ -1,0 +1,25 @@
+{
+  "configurations" : [
+    {
+      "id" : "1FB150A8-DB6E-4947-9621-115F1B005AD5",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:PokeVerse.xcodeproj",
+        "identifier" : "A829F9A82DC4E5DB0078FD4B",
+        "name" : "PokeVerseTests"
+      }
+    }
+  ],
+  "version" : 1
+}

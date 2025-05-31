@@ -90,6 +90,8 @@ final class EvolutionDetailView: UIView {
         }
     }
 
+    // MARK: - Private funcs
+
     private func createEvolutionStageView(pokemonId: Int, pokemonName: String, method: String) -> UIView {
         let container = UIView()
 
