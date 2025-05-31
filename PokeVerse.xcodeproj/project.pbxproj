@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A87BEC792DEB204A00A4C889 /* PokeVerseTest.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = A87BEC4B2DEB204A00A4C889 /* PokeVerseTest.xctestplan */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		A829F9AA2DC4E5DB0078FD4B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		A829F9932DC4E5D90078FD4B /* PokeVerse.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PokeVerse.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A829F9A92DC4E5DB0078FD4B /* PokeVerseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PokeVerseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A829F9B32DC4E5DB0078FD4B /* PokeVerseUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PokeVerseUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A87BEC4B2DEB204A00A4C889 /* PokeVerseTest.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = PokeVerseTest.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -88,6 +93,7 @@
 		A829F98A2DC4E5D90078FD4B = {
 			isa = PBXGroup;
 			children = (
+				A87BEC4B2DEB204A00A4C889 /* PokeVerseTest.xctestplan */,
 				A829F9952DC4E5D90078FD4B /* PokeVerse */,
 				A829F9AC2DC4E5DB0078FD4B /* PokeVerseTests */,
 				A829F9B62DC4E5DB0078FD4B /* PokeVerseUITests */,
@@ -228,6 +234,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A87BEC792DEB204A00A4C889 /* PokeVerseTest.xctestplan in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
