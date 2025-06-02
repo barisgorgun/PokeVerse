@@ -11,7 +11,7 @@ struct PokeListBuilder {
 
     private init() {}
 
-    static func build() -> UIViewController {
+    static func build(analytics: AnalyticsTracking) -> UIViewController {
         let pokeListService = PokemonListService()
         let router = PokeListRouter()
         let dataStore = FavoritePokemonDataStore()
@@ -20,7 +20,8 @@ struct PokeListBuilder {
         let presenter = PokeListPresenter(
             view: nil,
             interactor: interactor,
-            router: router
+            router: router,
+            analytics: analytics
         )
 
         let view = PokeListViewController(pokeListPresenter: presenter)

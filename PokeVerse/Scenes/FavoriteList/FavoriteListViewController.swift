@@ -27,24 +27,22 @@ class FavoriteListViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        favoriteListTableView.dataSource = self
-        favoriteListTableView.delegate = self
-        view.addSubview(favoriteListTableView)
-
-        NSLayoutConstraint.activate([
-            favoriteListTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            favoriteListTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            favoriteListTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            favoriteListTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-        ])
-
-        EventCenter.observe(self, selector: #selector(handleFavoriteChange), for: .favoriteStatusChanged)
-        
         title = "favorite_title".localized()
+
+        setupTableView()
+        EventCenter.observe(self, selector: #selector(handleFavoriteChange), for: .favoriteStatusChanged)
 
         Task {
             await favoriteListPresenter.load()
+        }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        navigationController?.applyDefaultAppearance()
+        if let selectedIndexPath = favoriteListTableView.indexPathForSelectedRow {
+            favoriteListTableView.deselectRow(at: selectedIndexPath, animated: true)
         }
     }
 
@@ -61,6 +59,19 @@ class FavoriteListViewController: UIViewController {
         EventCenter.remove(self, for: .favoriteStatusChanged)
     }
 
+    private func setupTableView() {
+        favoriteListTableView.dataSource = self
+        favoriteListTableView.delegate = self
+        view.addSubview(favoriteListTableView)
+
+        NSLayoutConstraint.activate([
+            favoriteListTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            favoriteListTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            favoriteListTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            favoriteListTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+    }
+
     @objc private func handleFavoriteChange(notification: Notification) {
         Task {
             await favoriteListPresenter.didReceiveFavoriteChange()
@@ -71,6 +82,7 @@ class FavoriteListViewController: UIViewController {
 // MARK: - UITableViewDataSource & UITableViewDelegate
 
 extension FavoriteListViewController: UITableViewDataSource, UITableViewDelegate {
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         favoriteList.count
     }

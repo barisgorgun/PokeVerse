@@ -14,6 +14,7 @@ final class PokeListPresenter: PokeListPresenterProtocol {
     weak var view: PokeListViewProtocol?
     private let interactor: PokeListInteractorProtocol
     private let router: PokeListRouterProtocol
+    private let analytics: AnalyticsTracking
     private var isLoadingMore = false
     private var hasMorePages = true
 
@@ -26,11 +27,13 @@ final class PokeListPresenter: PokeListPresenterProtocol {
     init(
         view: PokeListViewProtocol?,
         interactor: PokeListInteractorProtocol,
-        router: PokeListRouterProtocol
+        router: PokeListRouterProtocol,
+        analytics: AnalyticsTracking
     ) {
         self.view = view
         self.interactor = interactor
         self.router = router
+        self.analytics = analytics
     }
 
     func load() async {
@@ -42,6 +45,7 @@ final class PokeListPresenter: PokeListPresenterProtocol {
         case .success(let pokeList):
             self.pokeList = pokeList
             await view?.showPokeList(species: pokeList)
+            analytics.logEvent(.screenView(name: "PokeList"))
         case .failure(let error):
             let alert = Alert(message: error.userMessage)
             await view?.showAlert(alert: alert)
@@ -55,6 +59,7 @@ final class PokeListPresenter: PokeListPresenterProtocol {
 
         let poke = pokeList[index].url
         router.navigate(to: .detail(poke))
+        analytics.logEvent(.buttonTap(name: "SelectPoke"))
     }
 
     func prefetchIfNeeded(for indexPaths: [IndexPath]) async {
@@ -79,6 +84,7 @@ final class PokeListPresenter: PokeListPresenterProtocol {
             pokeList[indexPath.row].isFavorite = isFavorite
             await view?.updateFavoriteStatus(at: indexPath, isFavorite: isFavorite)
             EventCenter.post(.favoriteStatusChanged, userInfo: ["id": pokemon.id, "isFavorite": pokemon.isFavorite])
+            analytics.logEvent(.buttonTap(name: "Favorite"))
         } catch let error as CoreDataError {
             let alert = Alert(message: error.localizedDescription)
             await view?.showAlert(alert: alert)
@@ -104,9 +110,11 @@ final class PokeListPresenter: PokeListPresenterProtocol {
         case .success(let pokeList):
             self.pokeList.append(contentsOf: pokeList)
             await view?.showPokeList(species: self.pokeList)
+            analytics.logEvent(.prefetchSuccess(count: pokeList.count))
         case .failure(let error):
             let alert = Alert(message: error.userMessage)
             await view?.showAlert(alert: alert)
+            analytics.logEvent(.prefetchFailed)
         }
     }
 

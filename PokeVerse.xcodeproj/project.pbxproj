@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		A87BEC792DEB204A00A4C889 /* PokeVerseTest.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = A87BEC4B2DEB204A00A4C889 /* PokeVerseTest.xctestplan */; };
+		A87BEF3B2DEDA2A000A4C889 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = A87BEF3A2DEDA2A000A4C889 /* FirebaseAnalytics */; };
+		A87BEF3D2DEDA2A000A4C889 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */ = {isa = PBXBuildFile; productRef = A87BEF3C2DEDA2A000A4C889 /* FirebaseAnalyticsWithoutAdIdSupport */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +72,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A87BEF3B2DEDA2A000A4C889 /* FirebaseAnalytics in Frameworks */,
+				A87BEF3D2DEDA2A000A4C889 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -131,6 +135,8 @@
 			);
 			name = PokeVerse;
 			packageProductDependencies = (
+				A87BEF3A2DEDA2A000A4C889 /* FirebaseAnalytics */,
+				A87BEF3C2DEDA2A000A4C889 /* FirebaseAnalyticsWithoutAdIdSupport */,
 			);
 			productName = PokeVerse;
 			productReference = A829F9932DC4E5D90078FD4B /* PokeVerse.app */;
@@ -216,6 +222,7 @@
 			mainGroup = A829F98A2DC4E5D90078FD4B;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				A87BEF392DEDA2A000A4C889 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A829F9942DC4E5D90078FD4B /* Products */;
@@ -299,6 +306,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 828UCSB77C;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PokeVerse/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -325,6 +333,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 828UCSB77C;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PokeVerse/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -575,6 +584,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A87BEF392DEDA2A000A4C889 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.13.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A87BEF3A2DEDA2A000A4C889 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A87BEF392DEDA2A000A4C889 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		A87BEF3C2DEDA2A000A4C889 /* FirebaseAnalyticsWithoutAdIdSupport */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A87BEF392DEDA2A000A4C889 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsWithoutAdIdSupport;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A829F98B2DC4E5D90078FD4B /* Project object */;
 }

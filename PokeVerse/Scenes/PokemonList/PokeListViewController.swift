@@ -27,8 +27,8 @@ final class PokeListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         title = "pokeList_title".localized()
+
         setupTableView()
         EventCenter.observe(self, selector: #selector(handleFavoriteRemoved), for: .favoriteStatusChanged)
         Task {

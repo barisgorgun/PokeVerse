@@ -6,18 +6,29 @@
 //
 
 import UIKit
+import FirebaseAnalytics
 
 class MainTabBarController: UITabBarController {
+    private let analytics: AnalyticsTracking
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupTabs()
         tabBar.tintColor = .systemRed
         tabBar.backgroundColor = .systemBackground
     }
 
+    init(analytics: AnalyticsTracking) {
+        self.analytics = analytics
+        super.init(nibName: nil, bundle: nil)
+        setupTabs()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     private func setupTabs() {
-        let pokeListVC = PokeListBuilder.build()
+        let pokeListVC = PokeListBuilder.build(analytics: analytics)
         let listNav = UINavigationController(rootViewController: pokeListVC)
         listNav.tabBarItem = UITabBarItem(title: "pokeList_title".localized(), image: UIImage(systemName: "list.bullet"), tag: 0)
         listNav.navigationBar.prefersLargeTitles = true

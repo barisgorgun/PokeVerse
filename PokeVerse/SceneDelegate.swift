@@ -7,29 +7,32 @@
 
 import UIKit
 import SwiftUI
+import FirebaseCore
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    private let analyticsManager: AnalyticsTracking = FirebaseAnalyticsManager()
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else {
             return
         }
 
-           let window = UIWindow(windowScene: windowScene)
+        FirebaseApp.configure()
+        let window = UIWindow(windowScene: windowScene)
 
-           let splashView = SplashView {
-               self.showMainApp(in: window)
-           }
-           let hostingController = UIHostingController(rootView: splashView)
-           window.rootViewController = hostingController
-           self.window = window
-           window.makeKeyAndVisible()
+        let splashView = SplashView {
+            self.showMainApp(in: window, analytics: self.analyticsManager)
+        }
+        let hostingController = UIHostingController(rootView: splashView)
+        window.rootViewController = hostingController
+        self.window = window
+        window.makeKeyAndVisible()
     }
 
-    private func showMainApp(in window: UIWindow) {
-        let mainVC = MainTabBarController()
+    private func showMainApp(in window: UIWindow, analytics: AnalyticsTracking) {
+        let mainVC = MainTabBarController(analytics: analyticsManager)
 
         UIView.transition(
             with: window,
