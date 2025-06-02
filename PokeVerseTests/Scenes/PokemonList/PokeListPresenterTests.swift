@@ -11,22 +11,24 @@ import XCTest
 
 @MainActor
 final class PokeListPresenterTests: XCTestCase {
-
     private var presenter: PokeListPresenter!
     private var interactor: MockListInteractor!
     private var view: MockPokeListView!
     private var router: MockPokeListRouter!
+    private var analytics: MockFirebaseAnalyticsManager!
 
     override func setUp() async throws {
         try await super.setUp()
         interactor = MockListInteractor()
         view = await MainActor.run { MockPokeListView() }
         router = MockPokeListRouter()
+        analytics = MockFirebaseAnalyticsManager()
 
         presenter = PokeListPresenter(
             view: view,
             interactor: interactor,
-            router: router
+            router: router,
+            analytics: analytics
         )
     }
 
@@ -214,7 +216,12 @@ final class PokeListPresenterTests: XCTestCase {
         // Given
         let interactor = MockListInteractor()
         interactor.favoriteIDs = ["123"]
-        presenter = PokeListPresenter(view: view, interactor: interactor, router: router)
+        presenter = PokeListPresenter(
+            view: view,
+            interactor: interactor,
+            router: router,
+            analytics: analytics
+        )
 
         // When
         let result = presenter.isFavorite(at: "123")
@@ -310,5 +317,14 @@ private final class MockPokeListRouter: PokeListRouterProtocol {
             goToDetailPageCalled = true
             receivedURL = url
         }
+    }
+}
+
+// MARK: - MockFirebaseAnalyticsManager
+
+private final class MockFirebaseAnalyticsManager: AnalyticsTracking {
+    // TODO: will be add actions and unit tests
+    func logEvent(_ event: PokeVerse.AnalyticsEvent) {
+
     }
 }
