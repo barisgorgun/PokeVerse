@@ -1,0 +1,42 @@
+# Xcode
+DerivedData/
+*.xcworkspace
+*.xcuserdata
+*.xcodeproj/project.xcworkspace/
+*.xcodeproj/xcuserdata/
+
+# Build
+build/
+*.app
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+.env               # Firebase CLI token gibi hassas bilgiler için
+
+# SwiftPM
+.swiftpm
+Package.resolved
+
+# CocoaPods (eğer kullanıyorsan)
+Pods/
+Podfile.lock
+
+# Carthage (eğer kullanıyorsan)
+Carthage/
+
+# Firebase
+GoogleService-Info.plist
+
+# Logs
+*.log
+
+# macOS
+.DS_Store
+*.swp
+*.lock

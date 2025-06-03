@@ -1,19 +1,3 @@
-# This file contains the fastlane.tools configuration
-# You can find the documentation at https://docs.fastlane.tools
-#
-# For a list of all available actions, check out
-#
-#     https://docs.fastlane.tools/actions
-#
-# For a list of all available plugins, check out
-#
-#     https://docs.fastlane.tools/plugins/available-plugins
-#
-
-# Uncomment the line if you want fastlane to automatically update itself
-# update_fastlane
-
-default_platform(:ios)
 
 default_platform(:ios)
 
@@ -25,6 +9,27 @@ platform :ios do
       scheme: "PokeVerse",
       clean: true,
       destination: "platform=iOS Simulator,name=iPhone 15"
+    )
+  end  # 👈 BU 'end' satırı eksikti
+
+  desc "Build and upload to Firebase App Distribution"
+  lane :firebase do
+    build_app(
+      scheme: "PokeVerse",
+      export_method: "ad-hoc",
+      export_options: {
+        provisioningProfiles: {
+          "com.PokeVerse" => "PokeVerse AdHoc 2025"
+        },
+        teamID: "828UCSB77C"
+      }
+    )
+
+    firebase_app_distribution(
+      app: "1:488343964345:ios:173b8f165818998477a968",
+      testers: "barisgorgunn@gmail.com",
+      release_notes: "New build via Fastlane",
+      firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"]
     )
   end
 end
