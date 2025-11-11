@@ -1,8 +1,8 @@
 //
 //  NetworkUtilities.swift
-//  PokeVerse
+//  CoreNetwork
 //
-//  Created by Gorgun, Baris on 2.05.2025.
+//  Created by Gorgun, Baris on 11.11.2025.
 //
 
 import Foundation
@@ -13,11 +13,11 @@ public enum HTTPMethod: String {
     case put = "PUT"
 }
 
-enum NetworkError: LocalizedError, Equatable {
-    static func == (lhs: NetworkError, rhs: NetworkError) -> Bool {
+public enum NetworkError: LocalizedError, Equatable {
+    public static func == (lhs: NetworkError, rhs: NetworkError) -> Bool {
         lhs.localizedDescription == rhs.localizedDescription
     }
-    
+
     case unknownStatusCode
     case contentEmptyData
     case contentDecoding(error: Error)
@@ -26,7 +26,7 @@ enum NetworkError: LocalizedError, Equatable {
     case custom(message: String)
     case fileNotFound
 
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .unknownStatusCode:
             "error_unknownStatusCode_description".localized()
@@ -46,7 +46,7 @@ enum NetworkError: LocalizedError, Equatable {
     }
 }
 
-extension NetworkError {
+public extension NetworkError {
     var userMessage: String {
         switch self {
         case .unknownStatusCode:
@@ -67,7 +67,7 @@ extension NetworkError {
     }
 }
 
-extension NetworkError {
+public extension NetworkError {
 
     static func from(_ error: URLError) -> NetworkError {
         switch error.code {

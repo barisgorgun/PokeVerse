@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreNetwork
 
 struct PokemonListAPI: APIRequest {
     var path: String {

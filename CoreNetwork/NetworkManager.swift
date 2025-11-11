@@ -1,20 +1,22 @@
 //
-//  NetworkManager.swift
-//  PokeVerse
+//  NetworkManagera.swift
+//  CoreNetwork
 //
-//  Created by Gorgun, Baris on 2.05.2025.
+//  Created by Gorgun, Baris on 11.11.2025.
 //
 
 import UIKit
 
-protocol NetworkManagerProtocol {
+public protocol NetworkManagerProtocol {
     func request<T: Decodable>(service: APIRequest, type: T.Type) async -> Result<T, NetworkError>
     func requestImage(from url: URL) async -> Result<UIImage, NetworkError>
 }
 
-final class NetworkManager: NetworkManagerProtocol {
+public final class NetworkManager: NetworkManagerProtocol {
 
-    func request<T: Decodable>(
+    public init() {}
+
+    public func request<T: Decodable>(
         service: APIRequest,
         type: T.Type
     ) async -> Result<T, NetworkError> {
@@ -39,7 +41,7 @@ final class NetworkManager: NetworkManagerProtocol {
         }
     }
 
-    func requestImage(from url: URL) async -> Result<UIImage, NetworkError> {
+    public func requestImage(from url: URL) async -> Result<UIImage, NetworkError> {
         do {
             let (data, response) = try await URLSession.shared.data(from: url)
 

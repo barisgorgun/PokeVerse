@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreNetwork
 
 struct SpeciesDetailAPI: APIRequest {
     private var pokemonUrl: String

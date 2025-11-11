@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreNetwork
 
 struct PokeEvolutionAPI: APIRequest {
     private var evolutionUrl: String

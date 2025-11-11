@@ -7,7 +7,7 @@
 
 import Foundation
 import UIKit
-
+import CoreNetwork
 
 protocol PokemonListServiceProtocol {
     func fetchPokemonList() async -> Result<PokeSpecies, NetworkError>

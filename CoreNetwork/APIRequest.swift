@@ -1,8 +1,8 @@
 //
-//  Endpoint.swift
-//  PokeVerse
+//  APIRequest.swift
+//  CoreNetwork
 //
-//  Created by Gorgun, Baris on 2.05.2025.
+//  Created by Gorgun, Baris on 11.11.2025.
 //
 
 import Foundation
@@ -14,13 +14,13 @@ public protocol APIRequest {
     var fullURL: URL? { get }
 }
 
-extension APIRequest {
+public extension APIRequest {
     var baseURL: String {
         "https://pokeapi.co/api/v2"
     }
 }
 
-extension APIRequest {
+public extension APIRequest {
     var fullURL: URL? { nil }
 }
 

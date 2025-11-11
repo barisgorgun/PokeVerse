@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreNetwork
 
 final class PokemonDetailInteractor: PokemonDetailInteractorProtocol {
     private let pokemonDetailService: PokemonDetailServiceProtocol

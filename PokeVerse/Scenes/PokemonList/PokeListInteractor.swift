@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreNetwork
 
 final class PokeListInteractor: PokeListInteractorProtocol {
 
@@ -102,7 +103,6 @@ final class PokeListInteractor: PokeListInteractorProtocol {
                 items[index] = item
             }
         }
-
         return items.compactMap { $0 }
     }
 }

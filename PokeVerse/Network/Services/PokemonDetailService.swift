@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import CoreNetwork
 
 protocol PokemonDetailServiceProtocol {
     func fetchSpeciesDetail(pokemonUrl: String) async -> Result<SpeciesDetail, NetworkError>
