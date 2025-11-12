@@ -7,6 +7,8 @@
 
 import Foundation
 import UIKit
+import CoreNetwork
+import Core
 
 final class FavoriteListInteractor: FavoriteListInteractorProtocol {
     private let dataStore: FavoritePokemonDataStoreProtocol

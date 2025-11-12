@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import CoreNetwork
+import Core
 
 struct PokeListBuilder {
 

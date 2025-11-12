@@ -7,8 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A80AB9F22EC47C30000C8D2F /* Core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A86E77492EC365B50058BB1F /* Core.framework */; };
+		A80AB9F32EC47C30000C8D2F /* CoreNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A86E76FE2EC358860058BB1F /* CoreNetwork.framework */; };
 		A86E77062EC358860058BB1F /* CoreNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A86E76FE2EC358860058BB1F /* CoreNetwork.framework */; };
 		A86E77072EC358860058BB1F /* CoreNetwork.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A86E76FE2EC358860058BB1F /* CoreNetwork.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A86E77602EC367C00058BB1F /* Core.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A86E77492EC365B50058BB1F /* Core.framework */; };
+		A86E77612EC367C00058BB1F /* Core.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A86E77492EC365B50058BB1F /* Core.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A87BEC792DEB204A00A4C889 /* PokeVerseTest.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = A87BEC4B2DEB204A00A4C889 /* PokeVerseTest.xctestplan */; };
 		A87BEF3B2DEDA2A000A4C889 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = A87BEF3A2DEDA2A000A4C889 /* FirebaseAnalytics */; };
 		A87BEF3D2DEDA2A000A4C889 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */ = {isa = PBXBuildFile; productRef = A87BEF3C2DEDA2A000A4C889 /* FirebaseAnalyticsWithoutAdIdSupport */; };
@@ -36,6 +40,13 @@
 			remoteGlobalIDString = A86E76FD2EC358860058BB1F;
 			remoteInfo = CoreNetwork;
 		};
+		A86E77622EC367C00058BB1F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A829F98B2DC4E5D90078FD4B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A86E77482EC365B50058BB1F;
+			remoteInfo = Core;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -50,6 +61,17 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A86E77642EC367C00058BB1F /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				A86E77612EC367C00058BB1F /* Core.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +80,7 @@
 		A829F9B32DC4E5DB0078FD4B /* PokeVerseUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PokeVerseUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A86E76FE2EC358860058BB1F /* CoreNetwork.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CoreNetwork.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A86E771B2EC35E160058BB1F /* PokeVerseSwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PokeVerseSwiftUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A86E77492EC365B50058BB1F /* Core.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Core.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A87BEC4B2DEB204A00A4C889 /* PokeVerseTest.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = PokeVerseTest.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -100,6 +123,11 @@
 			path = PokeVerseSwiftUI;
 			sourceTree = "<group>";
 		};
+		A86E774A2EC365B50058BB1F /* Core */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Core;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -131,10 +159,20 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A86E77602EC367C00058BB1F /* Core.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		A86E77182EC35E160058BB1F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A80AB9F22EC47C30000C8D2F /* Core.framework in Frameworks */,
+				A80AB9F32EC47C30000C8D2F /* CoreNetwork.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A86E77462EC365B50058BB1F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -153,6 +191,8 @@
 				A829F9B62DC4E5DB0078FD4B /* PokeVerseUITests */,
 				A86E76FF2EC358860058BB1F /* CoreNetwork */,
 				A86E771C2EC35E160058BB1F /* PokeVerseSwiftUI */,
+				A86E774A2EC365B50058BB1F /* Core */,
+				A86E775F2EC367C00058BB1F /* Frameworks */,
 				A829F9942DC4E5D90078FD4B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -165,14 +205,29 @@
 				A829F9B32DC4E5DB0078FD4B /* PokeVerseUITests.xctest */,
 				A86E76FE2EC358860058BB1F /* CoreNetwork.framework */,
 				A86E771B2EC35E160058BB1F /* PokeVerseSwiftUI.app */,
+				A86E77492EC365B50058BB1F /* Core.framework */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A86E775F2EC367C00058BB1F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
 		A86E76F92EC358860058BB1F /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A86E77442EC365B50058BB1F /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -262,10 +317,12 @@
 				A86E76FA2EC358860058BB1F /* Sources */,
 				A86E76FB2EC358860058BB1F /* Frameworks */,
 				A86E76FC2EC358860058BB1F /* Resources */,
+				A86E77642EC367C00058BB1F /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				A86E77632EC367C00058BB1F /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				A86E76FF2EC358860058BB1F /* CoreNetwork */,
@@ -299,6 +356,29 @@
 			productReference = A86E771B2EC35E160058BB1F /* PokeVerseSwiftUI.app */;
 			productType = "com.apple.product-type.application";
 		};
+		A86E77482EC365B50058BB1F /* Core */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A86E774F2EC365B50058BB1F /* Build configuration list for PBXNativeTarget "Core" */;
+			buildPhases = (
+				A86E77442EC365B50058BB1F /* Headers */,
+				A86E77452EC365B50058BB1F /* Sources */,
+				A86E77462EC365B50058BB1F /* Frameworks */,
+				A86E77472EC365B50058BB1F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A86E774A2EC365B50058BB1F /* Core */,
+			);
+			name = Core;
+			packageProductDependencies = (
+			);
+			productName = Core;
+			productReference = A86E77492EC365B50058BB1F /* Core.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -326,6 +406,9 @@
 					A86E771A2EC35E160058BB1F = {
 						CreatedOnToolsVersion = 26.1;
 					};
+					A86E77482EC365B50058BB1F = {
+						CreatedOnToolsVersion = 26.1;
+					};
 				};
 			};
 			buildConfigurationList = A829F98E2DC4E5D90078FD4B /* Build configuration list for PBXProject "PokeVerse" */;
@@ -351,6 +434,7 @@
 				A829F9B22DC4E5DB0078FD4B /* PokeVerseUITests */,
 				A86E76FD2EC358860058BB1F /* CoreNetwork */,
 				A86E771A2EC35E160058BB1F /* PokeVerseSwiftUI */,
+				A86E77482EC365B50058BB1F /* Core */,
 			);
 		};
 /* End PBXProject section */
@@ -386,6 +470,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		A86E77192EC35E160058BB1F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A86E77472EC365B50058BB1F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -430,6 +521,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A86E77452EC365B50058BB1F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -447,6 +545,11 @@
 			isa = PBXTargetDependency;
 			target = A86E76FD2EC358860058BB1F /* CoreNetwork */;
 			targetProxy = A86E77042EC358860058BB1F /* PBXContainerItemProxy */;
+		};
+		A86E77632EC367C00058BB1F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A86E77482EC365B50058BB1F /* Core */;
+			targetProxy = A86E77622EC367C00058BB1F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -840,6 +943,84 @@
 			};
 			name = Release;
 		};
+		A86E77502EC365B50058BB1F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 828UCSB77C;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.Core;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_MODULE = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		A86E77512EC365B50058BB1F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 828UCSB77C;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.Core;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_MODULE = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -897,6 +1078,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		A86E774F2EC365B50058BB1F /* Build configuration list for PBXNativeTarget "Core" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A86E77502EC365B50058BB1F /* Debug */,
+				A86E77512EC365B50058BB1F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -905,7 +1095,7 @@
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 11.13.0;
+				minimumVersion = 11.14.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

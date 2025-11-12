@@ -7,6 +7,7 @@
 
 import UIKit
 import CoreNetwork
+import Core
 
 final class PokeListInteractor: PokeListInteractorProtocol {
 

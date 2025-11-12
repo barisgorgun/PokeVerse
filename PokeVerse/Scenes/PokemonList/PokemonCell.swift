@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreNetwork
 
 protocol PokemonListCellDelegate: AnyObject {
     func didTapFavoriteButton(on cell: PokemonCell)

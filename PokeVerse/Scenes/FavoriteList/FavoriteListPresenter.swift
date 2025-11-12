@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import CoreNetwork
+import Core
 
 final class FavoriteListPresenter: FavoriteListPresenterProtocol {
     weak var view: FavoriteListViewProtocol?

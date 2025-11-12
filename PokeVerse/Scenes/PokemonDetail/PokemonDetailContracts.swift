@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreNetwork
+import Core
 
 // MARK: View
 

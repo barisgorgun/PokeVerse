@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreNetwork
 
 class FavoriteListViewController: UIViewController {
 
