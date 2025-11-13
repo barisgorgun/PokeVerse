@@ -20,13 +20,13 @@ public struct PokemonDisplayItem: Equatable, Identifiable, Hashable {
         name: String,
         url: String,
         image: UIImage,
-        isFavorite: Bool
+        isFavorite: Bool? = false
     ) {
         self.id = id
         self.name = name
         self.url = url
         self.image = image
-        self.isFavorite = isFavorite
+        self.isFavorite = isFavorite ?? false
     }
 
     // 👇 UIImage Hashable olmadığı için manuel implementasyon gerekiyor
@@ -52,6 +52,6 @@ extension PokemonDisplayItem {
         self.name = favorite.name
         self.url = favorite.url
         self.image = image
-        self.isFavorite = true
+        self.isFavorite = false
     }
 }

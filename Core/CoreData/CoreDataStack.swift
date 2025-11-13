@@ -12,25 +12,32 @@ public final class CoreDataStack {
     // MARK: - Singleton
 
     public static let shared = CoreDataStack()
+    public let container: NSPersistentContainer
 
-    private init() {}
+    private init() {
+        // 🔹 1. Framework bundle'ını bul
+        let bundle = Bundle(for: FavoritePokemon.self)
 
-    // MARK: - Persistent Container
+        // 🔹 2. Model dosyasını yükle (.momd uzantılı derlenmiş model)
+        guard let modelURL = bundle.url(forResource: "CoreDataModel", withExtension: "momd"),
+              let model = NSManagedObjectModel(contentsOf: modelURL) else {
+            fatalError("❌ CoreData model could not be loaded from Core framework bundle.")
+        }
 
-    lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "CoreDataModel")
-        container.loadPersistentStores { description, error in
+        // 🔹 3. Container'ı oluştur
+        container = NSPersistentContainer(name: "CoreDataModel", managedObjectModel: model)
+
+        container.loadPersistentStores { _, error in
             if let error = error {
-                fatalError("Veritabanı yüklenemedi: \(error)")
+                fatalError("❌ Persistent store load error: \(error)")
             }
         }
-        return container
-    }()
+    }
 
     // MARK: - Context
 
     public var context: NSManagedObjectContext {
-        return persistentContainer.viewContext
+        return container.viewContext
     }
 
     // MARK: - Save

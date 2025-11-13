@@ -7,9 +7,23 @@
 
 import SwiftUI
 import CoreNetwork
+import Core
 
 struct PokeListView: View {
-    @StateObject private var vm = PokeListViewModel(pokeListService: PokemonListService())
+
+    @EnvironmentObject var favorites: FavoriteListViewModel
+    @StateObject private var vm: PokeListViewModel
+
+    init() {
+        _vm = StateObject(wrappedValue:
+            PokeListViewModel(
+                pokeListService: PokemonListService(),
+                dataStore: FavoritePokemonDataStore(),
+                favorites: nil
+            )
+        )
+    }
+
     private let columns = [GridItem(.adaptive(minimum: 150), spacing: 16)]
 
     var body: some View {
@@ -19,14 +33,23 @@ struct PokeListView: View {
                 content
             }
             .navigationTitle("Pokémon List")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink(destination: FavoriteListView()) {
+                        Image(systemName: "star.fill")
+                    }
+                }
+            }
             .navigationDestination(item: $vm.selectedPokemon) { selected in
                 PokemonDetailView(
                     pokemonUrl: selected.url,
                     pokemonName: selected.name,
                     pokemonImage: selected.image
                 )
+                .environmentObject(favorites)
             }
             .task {
+                vm.setFavorites(favorites)
                 await vm.loadPokemons()
             }
         }
@@ -47,9 +70,9 @@ struct PokeListView: View {
                     ForEach(pokemons, id: \.id) { pokemon in
                         PokemonCardView(
                             item: pokemon,
-                            toggleFavorite: { vm.toggleFavorite(for: pokemon) },
                             onTap: { vm.selectedPokemon = pokemon }
                         )
+                        .environmentObject(favorites)
                     }
                 }
                 .padding()
@@ -69,4 +92,5 @@ struct PokeListView: View {
 
 #Preview {
     PokeListView()
+        .environmentObject(FavoriteListViewModel())
 }

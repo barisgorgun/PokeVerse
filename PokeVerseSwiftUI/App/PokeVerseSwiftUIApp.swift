@@ -10,9 +10,12 @@ import CoreNetwork
 
 @main
 struct PokeVerseSwiftUIApp: App {
+    @StateObject private var favorites = FavoriteListViewModel()
+
     var body: some Scene {
         WindowGroup {
             PokeListView()
+                .environmentObject(favorites)
         }
     }
 }

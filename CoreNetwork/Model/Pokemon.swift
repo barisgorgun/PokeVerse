@@ -13,14 +13,17 @@ public struct Pokemon: Equatable {
     public let speciesDetail: SpeciesDetail
     public let evolutionDetails: EvolutionChainDetails
     public let pokemonDetails: PokemonDetails
+    public let isFavorite: Bool
 
     public init(
         speciesDetail: SpeciesDetail,
         evolutionDetails: EvolutionChainDetails,
-        pokemonDetails: PokemonDetails
+        pokemonDetails: PokemonDetails,
+        isFavorite: Bool
     ) {
         self.speciesDetail = speciesDetail
         self.evolutionDetails = evolutionDetails
         self.pokemonDetails = pokemonDetails
+        self.isFavorite = isFavorite
     }
 }

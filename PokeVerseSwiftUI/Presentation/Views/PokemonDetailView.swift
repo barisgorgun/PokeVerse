@@ -10,18 +10,20 @@ import CoreNetwork
 
 struct PokemonDetailView: View {
     @StateObject var vm: PokemonDetailViewModel
-    let pokemonUrl: String
+    @EnvironmentObject var favorites: FavoriteListViewModel
+
     let pokemonName: String
     let pokemonImage: UIImage
 
     init(pokemonUrl: String, pokemonName: String, pokemonImage: UIImage) {
-        self.pokemonUrl = pokemonUrl
         self.pokemonName = pokemonName
         self.pokemonImage = pokemonImage
-        _vm = StateObject(
-            wrappedValue: PokemonDetailViewModel(
+
+        _vm = StateObject(wrappedValue:
+            PokemonDetailViewModel(
                 pokemonDetailService: PokemonDetailService(),
-                pokemonUrl: pokemonUrl
+                pokemonUrl: pokemonUrl,
+                favorites: FavoriteListViewModel()
             )
         )
     }
@@ -30,56 +32,47 @@ struct PokemonDetailView: View {
         ZStack {
             backgroundGradient.ignoresSafeArea()
 
-            switch vm.state {
-            case .idle, .loading:
-                ProgressView("Loading \(pokemonName.capitalized)...")
-                    .progressViewStyle(.circular)
-                    .tint(.blue)
-                    .font(.headline)
-
-            case .error(let message):
-                VStack(spacing: 12) {
-                    Image(systemName: "exclamationmark.triangle.fill")
-                        .font(.largeTitle)
-                        .foregroundStyle(.orange)
-                    Text(message)
-                        .font(.subheadline)
-                        .multilineTextAlignment(.center)
-                    Button("Retry") {
-                        Task { await vm.fetchData() }
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
-
-            case .success(let pokemon):
-                ScrollView {
-                    VStack(spacing: 20) {
-                        HeaderSection(
-                            pokemonImage: pokemonImage,
-                            pokemonName: pokemonName,
-                            pokemon: pokemon
-                        )
-                        InfoSection(pokemon: pokemon)
-                        EvolutionSection(pokemon: pokemon)
-                    }
-                    .padding()
-                }
-                .transition(.opacity.combined(with: .scale))
-            }
+            content
         }
         .navigationTitle(pokemonName.capitalized)
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            vm.setFavorites(favorites)
+        }
         .task {
             await vm.fetchData()
         }
     }
 
+    @ViewBuilder
+    private var content: some View {
+        switch vm.state {
+        case .idle, .loading:
+            LoadingView(title: "Loading Pokémon...")
+        case .error(let message):
+            ErrorView(message: message) {
+                Task { await vm.fetchData() }
+            }
+        case .success(let pokemon):
+            ScrollView {
+                VStack(spacing: 16) {
+                    HeaderSection(
+                        pokemonImage: pokemonImage,
+                        pokemonName: pokemonName,
+                        pokemon: pokemon
+                    )
+                    .environmentObject(favorites)
+                    InfoSection(pokemon: pokemon)
+                    EvolutionSection(pokemon: pokemon)
+                }
+                .padding()
+            }
+        }
+    }
 
-    // MARK: - Helpers
-    
     private var backgroundGradient: LinearGradient {
         LinearGradient(
-            colors: [.blue.opacity(0.15), .purple.opacity(0.2)],
+            colors: [.blue.opacity(0.2), .purple.opacity(0.25)],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )

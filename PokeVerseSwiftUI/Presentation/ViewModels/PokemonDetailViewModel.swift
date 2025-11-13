@@ -8,52 +8,72 @@
 import Foundation
 import Combine
 import CoreNetwork
+import Core
+import SwiftUI
 
 @MainActor
 final class PokemonDetailViewModel: ObservableObject {
+
     @Published var state: ViewState<Pokemon> = .idle
 
-    private var pokemonDetailService: PokemonDetailServiceProtocol
-    private var pokemonUrl: String
+    private let pokemonDetailService: PokemonDetailServiceProtocol
+    private var favorites: FavoriteListViewModel
+    private let pokemonUrl: String
 
-    init(pokemonDetailService: PokemonDetailServiceProtocol, pokemonUrl: String) {
+    private var cancellables = Set<AnyCancellable>()
+    private var currentPokemon: Pokemon?
+
+    init(
+        pokemonDetailService: PokemonDetailServiceProtocol,
+        pokemonUrl: String,
+        favorites: FavoriteListViewModel
+    ) {
         self.pokemonDetailService = pokemonDetailService
         self.pokemonUrl = pokemonUrl
+        self.favorites = favorites
+
+        setupFavoritesListener()
+    }
+
+    private func setupFavoritesListener() {
+        favorites.$favorites
+            .sink { [weak self] _ in
+                self?.objectWillChange.send()
+            }
+            .store(in: &cancellables)
+    }
+
+    func setFavorites(_ fav: FavoriteListViewModel) {
+        self.favorites = fav
+        setupFavoritesListener()
     }
 
     func fetchData() async {
         state = .loading
 
-        let speciesResult = await pokemonDetailService.fetchSpeciesDetail(pokemonUrl: pokemonUrl)
-
-        guard case .success(let speciesDetail) = speciesResult else {
-            state = .error(NetworkError.contentEmptyData.userMessage)
+        let speciesRes = await pokemonDetailService.fetchSpeciesDetail(pokemonUrl: pokemonUrl)
+        guard case .success(let speciesDetail) = speciesRes else {
+            state = .error("Species error")
             return
         }
 
-        guard let evolutionUrl = speciesDetail.evolutionChain?.url else {
-            state = .error(NetworkError.invalidURL.userMessage)
+        async let evoRes = pokemonDetailService.fetchEvouations(evolutionUrl: speciesDetail.evolutionChain?.url ?? "")
+        async let detailRes = pokemonDetailService.fetchPokemonDetails(id: "\(speciesDetail.id)")
+
+        guard case .success(let evolution) = await evoRes,
+              case .success(let details) = await detailRes else {
+            state = .error("Detail error")
             return
         }
-
-        async let evolutionResult = pokemonDetailService.fetchEvouations(evolutionUrl: evolutionUrl)
-        async let detailsResult = pokemonDetailService.fetchPokemonDetails(id: "\(speciesDetail.id)")
-
-        let (evoRes, detailsRes) = await (evolutionResult, detailsResult)
-
-        guard case .success(let evolutions) = evoRes,
-              case .success(let pokemonDetails) = detailsRes else {
-            state = .error(NetworkError.contentEmptyData.userMessage)
-            return
-        }
-
 
         let pokemon = Pokemon(
             speciesDetail: speciesDetail,
-            evolutionDetails: evolutions,
-            pokemonDetails: pokemonDetails
+            evolutionDetails: evolution,
+            pokemonDetails: details,
+            isFavorite: favorites.isFavorite(for: "\(speciesDetail.id)")
         )
 
+        currentPokemon = pokemon
         state = .success(pokemon)
     }
 }

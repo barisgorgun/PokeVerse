@@ -10,10 +10,12 @@ import CoreNetwork
 
 struct PokemonCardView: View {
     let item: PokemonDisplayItem
-    let toggleFavorite: () -> Void
     let onTap: () -> Void
 
+    @EnvironmentObject var favorites: FavoriteListViewModel
+
     var body: some View {
+        let isFav = favorites.isFavorite(for: item.id)
         VStack(spacing: 8) {
             Image(uiImage: item.image)
                 .resizable()
@@ -26,11 +28,15 @@ struct PokemonCardView: View {
                 .font(.headline)
                 .foregroundStyle(.primary)
 
-            Button(action: toggleFavorite) {
-                Image(systemName: item.isFavorite ? "heart.fill" : "heart")
-                    .foregroundStyle(item.isFavorite ? .red : .gray)
-                    .scaleEffect(item.isFavorite ? 1.2 : 1.0)
-                    .animation(.spring(response: 0.3), value: item.isFavorite)
+            Button {
+                Task {
+                    await favorites.toggleFavorite(for: item)
+                }
+            } label: {
+                Image(systemName: isFav ? "heart.fill" : "heart")
+                    .foregroundStyle(isFav ? .red : .gray)
+                    .scaleEffect(isFav ? 1.2 : 1.0)
+                    .animation(.spring(response: 0.3), value: isFav)
             }
         }
         .padding()

@@ -90,8 +90,7 @@ final class PokeListInteractor: PokeListInteractorProtocol {
                             id: "\(pokemonID)",
                             name: species.name,
                             url: species.url,
-                            image: image,
-                            isFavorite: false
+                            image: image
                         )
                         return (index, item)
                     case .failure:

@@ -46,7 +46,8 @@ final class PokemonDetailInteractor: PokemonDetailInteractorProtocol {
         let pokemon = Pokemon(
             speciesDetail: speciesDetail,
             evolutionDetails: evolutionDetails,
-            pokemonDetails: pokemonDetails
+            pokemonDetails: pokemonDetails,
+            isFavorite: false
         )
 
         return .success(pokemon)
