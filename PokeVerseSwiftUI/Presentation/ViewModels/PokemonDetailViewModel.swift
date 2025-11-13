@@ -17,35 +17,18 @@ final class PokemonDetailViewModel: ObservableObject {
     @Published var state: ViewState<Pokemon> = .idle
 
     private let pokemonDetailService: PokemonDetailServiceProtocol
-    private var favorites: FavoriteListViewModel
     private let pokemonUrl: String
-
-    private var cancellables = Set<AnyCancellable>()
+    private let isFavorite: Bool
     private var currentPokemon: Pokemon?
 
     init(
         pokemonDetailService: PokemonDetailServiceProtocol,
         pokemonUrl: String,
-        favorites: FavoriteListViewModel
+        isFavorite: Bool
     ) {
         self.pokemonDetailService = pokemonDetailService
         self.pokemonUrl = pokemonUrl
-        self.favorites = favorites
-
-        setupFavoritesListener()
-    }
-
-    private func setupFavoritesListener() {
-        favorites.$favorites
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
-            }
-            .store(in: &cancellables)
-    }
-
-    func setFavorites(_ fav: FavoriteListViewModel) {
-        self.favorites = fav
-        setupFavoritesListener()
+        self.isFavorite = isFavorite
     }
 
     func fetchData() async {
@@ -70,7 +53,7 @@ final class PokemonDetailViewModel: ObservableObject {
             speciesDetail: speciesDetail,
             evolutionDetails: evolution,
             pokemonDetails: details,
-            isFavorite: favorites.isFavorite(for: "\(speciesDetail.id)")
+            isFavorite: isFavorite
         )
 
         currentPokemon = pokemon

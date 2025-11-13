@@ -18,8 +18,7 @@ struct PokeListView: View {
         _vm = StateObject(wrappedValue:
             PokeListViewModel(
                 pokeListService: PokemonListService(),
-                dataStore: FavoritePokemonDataStore(),
-                favorites: nil
+                dataStore: FavoritePokemonDataStore()
             )
         )
     }
@@ -44,12 +43,12 @@ struct PokeListView: View {
                 PokemonDetailView(
                     pokemonUrl: selected.url,
                     pokemonName: selected.name,
-                    pokemonImage: selected.image
+                    pokemonImage: selected.image,
+                    isFavorite: selected.isFavorite
                 )
                 .environmentObject(favorites)
             }
             .task {
-                vm.setFavorites(favorites)
                 await vm.loadPokemons()
             }
         }

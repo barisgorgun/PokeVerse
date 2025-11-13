@@ -23,7 +23,8 @@ struct FavoriteListView: View {
             PokemonDetailView(
                 pokemonUrl: selected.url,
                 pokemonName: selected.name,
-                pokemonImage: selected.image
+                pokemonImage: selected.image,
+                isFavorite: true
             )
         }
         .task {

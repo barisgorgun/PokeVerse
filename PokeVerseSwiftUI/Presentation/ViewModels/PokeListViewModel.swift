@@ -20,21 +20,15 @@ final class PokeListViewModel: ObservableObject {
     private let cache: ImageCacheActorProtocol
     private let dataStore: FavoritePokemonDataStoreProtocol
     private var pokemons: [PokemonDisplayItem] = []
-    private var favorites: FavoriteListViewModel?
-    private var cancellables = Set<AnyCancellable>()
 
     init(
         pokeListService: PokemonListServiceProtocol,
         cache: ImageCacheActorProtocol = ImageCacheActor.shared,
-        dataStore: FavoritePokemonDataStoreProtocol,
-        favorites: FavoriteListViewModel? = nil
+        dataStore: FavoritePokemonDataStoreProtocol
     ) {
         self.pokeListService = pokeListService
         self.cache = cache
         self.dataStore = dataStore
-        self.favorites = favorites
-
-        setupFavoritesListener()
     }
 
     func loadPokemons() async {
@@ -48,19 +42,6 @@ final class PokeListViewModel: ObservableObject {
         case .failure(let error):
             state = .error(error.localizedDescription)
         }
-    }
-
-    private func setupFavoritesListener() {
-        favorites?.$favorites
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
-            }
-            .store(in: &cancellables)
-    }
-
-    func setFavorites(_ fav: FavoriteListViewModel) {
-        self.favorites = fav
-        setupFavoritesListener()
     }
 
     private func createDisplayItems(from speciesList: [Species]) async -> [PokemonDisplayItem] {

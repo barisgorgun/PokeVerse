@@ -15,7 +15,12 @@ struct PokemonDetailView: View {
     let pokemonName: String
     let pokemonImage: UIImage
 
-    init(pokemonUrl: String, pokemonName: String, pokemonImage: UIImage) {
+    init(
+        pokemonUrl: String,
+        pokemonName: String,
+        pokemonImage: UIImage,
+        isFavorite: Bool
+    ) {
         self.pokemonName = pokemonName
         self.pokemonImage = pokemonImage
 
@@ -23,7 +28,7 @@ struct PokemonDetailView: View {
             PokemonDetailViewModel(
                 pokemonDetailService: PokemonDetailService(),
                 pokemonUrl: pokemonUrl,
-                favorites: FavoriteListViewModel()
+                isFavorite: isFavorite
             )
         )
     }
@@ -36,9 +41,6 @@ struct PokemonDetailView: View {
         }
         .navigationTitle(pokemonName.capitalized)
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
-            vm.setFavorites(favorites)
-        }
         .task {
             await vm.fetchData()
         }
@@ -77,12 +79,4 @@ struct PokemonDetailView: View {
             endPoint: .bottomTrailing
         )
     }
-}
-
-#Preview {
-    PokemonDetailView(
-        pokemonUrl: "https://pokeapi.co/api/v2/pokemon/1",
-        pokemonName: "bulbasaur",
-        pokemonImage: UIImage(systemName: "leaf") ?? UIImage()
-    )
 }
